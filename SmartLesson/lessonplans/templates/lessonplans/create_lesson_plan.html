@@ -1,0 +1,244 @@
+{% extends 'core/base.html' %}
+{% block title %}Create Lesson Plan{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto mt-8 px-4">
+  <!-- Header Section -->
+  <div class="text-center mb-10">
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">Create CBC Lesson Plan</h1>
+    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Design comprehensive and structured lesson plans following the Competency-Based Curriculum framework</p>
+  </div>
+
+  <form method="POST" class="space-y-8">
+    {% csrf_token %}
+    
+    <!-- Error Display -->
+    {% if form.non_field_errors %}
+      <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-sm mb-6">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-red-800">Please correct the following errors:</h3>
+            <ul class="list-disc list-inside mt-2 text-red-700">
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% for field in form %}
+      {% if field.errors %}
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+          <ul class="list-disc list-inside text-red-700">
+            {% for error in field.errors %}
+              <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Basic Details Section -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+      <button type="button" class="w-full text-left p-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white"
+              onclick="toggleSection('basic-details', this)">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-2xl font-bold">Basic Details</h3>
+            <p class="text-blue-100 mt-1">Essential information about your lesson</p>
+          </div>
+          <span class="text-2xl font-light transform transition-transform duration-300">−</span>
+        </div>
+      </button>
+      <div id="basic-details" class="p-8 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="space-y-2">
+            <label for="{{ form.subject.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Subject <span class="text-red-500">*</span>
+            </label>
+            {{ form.subject }}
+          </div>
+
+          <div class="space-y-2">
+            <label for="{{ form.grade_level.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Grade Level <span class="text-red-500">*</span>
+            </label>
+            {{ form.grade_level }}
+          </div>
+
+          <div class="space-y-2">
+            <label for="{{ form.term.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Term <span class="text-red-500">*</span>
+            </label>
+            {{ form.term }}
+          </div>
+
+          <div class="space-y-2">
+            <label for="{{ form.week.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Week <span class="text-red-500">*</span>
+            </label>
+            {{ form.week }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 pt-4 border-t border-gray-200">
+          <div class="space-y-2">
+            <label for="{{ form.topic.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Topic <span class="text-red-500">*</span>
+            </label>
+            {{ form.topic }}
+          </div>
+
+          <div class="space-y-2">
+            <label for="{{ form.sub_topic.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Sub-Topic <span class="text-red-500">*</span>
+            </label>
+            {{ form.sub_topic }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="space-y-2">
+            <label for="{{ form.lesson_title.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Lesson Title <span class="text-red-500">*</span>
+            </label>
+            {{ form.lesson_title }}
+          </div>
+
+          <div class="space-y-2">
+            <label for="{{ form.lesson_date.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Lesson Date <span class="text-red-500">*</span>
+            </label>
+            {{ form.lesson_date }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesson Components Section -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+      <button type="button" class="w-full text-left p-8 bg-gradient-to-r from-green-600 to-emerald-700 text-white"
+              onclick="toggleSection('lesson-components', this)">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-2xl font-bold">Lesson Components</h3>
+            <p class="text-green-100 mt-1">Structure and learning objectives</p>
+          </div>
+          <span class="text-2xl font-light transform transition-transform duration-300">+</span>
+        </div>
+      </button>
+      <div id="lesson-components" class="p-8 space-y-8 hidden">
+        <div class="">
+            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            General Objective <span class="text-red-500">*</span>
+            </label>
+            {{ form.general_objective }}
+            <p class="text-gray-500 text-sm">{{ form.general_objective.help_text }}</p>
+        </div>
+        
+        <div class="">
+            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Specific Learning Outcomes <span class="text-red-500">*</span>
+            </label>
+            {{ form.specific_learning_outcomes }}
+            <p class="text-gray-500 text-sm">{{ form.specific_learning_outcomes.help_text }}</p>
+        </div>
+        
+        <div class="">
+            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Key Inquiry Question
+            </label>
+            {{ form.key_inquiry_question }}
+            <p class="text-gray-500 text-sm">{{ form.key_inquiry_question.help_text }}</p>
+        </div>
+        
+        <div class="">
+            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Learning Resources <span class="text-red-500">*</span>
+            </label>
+            {{ form.learning_resources }}
+            <p class="text-gray-500 text-sm">{{ form.learning_resources.help_text }}</p>
+        </div>
+        
+        <div class="">
+            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Introduction <span class="text-red-500">*</span>
+            </label>
+            {{ form.introduction }}
+            <p class="text-gray-500 text-sm">{{ form.introduction.help_text }}</p>
+        </div>
+        
+        <div class="">
+            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Lesson Development <span class="text-red-500">*</span>
+            </label>
+            {{ form.lesson_development }}
+            <p class="text-gray-500 text-sm">{{ form.lesson_development.help_text }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assessment & Reflection -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+      <button type="button" class="w-full text-left p-8 bg-gradient-to-r from-purple-600 to-violet-700 text-white"
+              onclick="toggleSection('assessment-reflection', this)">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-2xl font-bold">Assessment & Reflection</h3>
+            <p class="text-purple-100 mt-1">Evaluation and professional insights</p>
+          </div>
+          <span class="text-2xl font-light transform transition-transform duration-300">+</span>
+        </div>
+      </button>
+      <div id="assessment-reflection" class="p-8 space-y-8 hidden">
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Assessment <span class="text-red-500">*</span>
+          </label>
+          {{ form.assessment }}
+        </div>
+        
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            Reflection
+          </label>
+          {{ form.reflection }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="sticky bottom-6 mt-12">
+      <div class="max-w-6xl mx-auto flex justify-end">
+        <button type="submit"
+          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center space-x-3">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span>Save Lesson Plan</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+function toggleSection(id, button) {
+  const section = document.getElementById(id);
+  const icon = button.querySelector('span');
+  const isHidden = section.classList.contains('hidden');
+  
+  section.classList.toggle('hidden', !isHidden);
+  icon.textContent = isHidden ? '−' : '+';
+  icon.classList.toggle('rotate-0', isHidden);
+  icon.classList.toggle('rotate-90', !isHidden);
+}
+</script>
+{% endblock %}

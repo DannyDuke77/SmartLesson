@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>{% block title %}{% endblock %} | SmartLesson Planner</title>
+  {% block style %}
+  {% endblock %}
+  <style>
+    /* Custom global styles */
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    html{
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-8xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="/" class="text-2xl font-bold text-blue-600">SmartLesson Planner</a>
+
+      <!-- Hamburger Button (Mobile) -->
+      <button id="menu-btn" class="md:hidden focus:outline-none">
+        <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" stroke-width="2"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Desktop Menu -->
+      <ul class="hidden md:flex space-x-6 font-medium">
+        <li><a href="/" class="hover:text-blue-600">Home</a></li>
+        <li><a href="#" class="hover:text-blue-600">Dashboard</a></li>
+        <li><a href="#" class="hover:text-blue-600">Profile</a></li>
+
+        <!-- Teacher Dropdown -->
+        <li class="relative group">
+          <button class="hover:text-blue-600 flex items-center gap-1">Teacher ▾</button>
+          <ul
+            class="absolute left-0 pt-2 w-48 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
+            <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block px-4 py-2 hover:bg-blue-50">Create Lesson Plan</a></li>
+            <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block px-4 py-2 hover:bg-blue-50">My Lesson Plans</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Shared Plans</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Notifications</a></li>
+          </ul>
+        </li>
+
+        <!-- Admin Dropdown -->
+        <li class="relative group">
+          <button class="hover:text-blue-600 flex items-center gap-1">Admin ▾</button>
+          <ul
+            class="absolute left-0 pt-2 w-56 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
+            <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block px-4 py-2 hover:bg-blue-50">Review Lesson Plans</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Approve / Reject Plans</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Coverage Reports</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Manage Teachers</a></li>
+          </ul>
+        </li>
+
+        <!-- ICT Officer Dropdown -->
+        <li class="relative group">
+          <button class="hover:text-blue-600 flex items-center gap-1">ICT Officer ▾</button>
+          <ul
+            class="absolute left-0 pt-2 w-52 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">User Management</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">System Backups</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Activity Logs</a></li>
+          </ul>
+        </li>
+
+        <li><a href="#" class="hover:text-blue-600">Help</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'accounts:logout' %}" class="hover:text-blue-600">Logout</a></li>
+        {% else %}
+        <li><a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu"
+         class="hidden md:hidden bg-white shadow-md border-t flex flex-col space-y-2 py-3 px-6 font-medium">
+      <a href="/" class="hover:text-blue-600">Home</a>
+      <a href="#" class="hover:text-blue-600">Dashboard</a>
+      <a href="#" class="hover:text-blue-600">Profile</a>
+
+      <details class="group">
+        <summary class="cursor-pointer hover:text-blue-600">Teacher</summary>
+        <ul class="ml-4 mt-1 space-y-1">
+          <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block hover:text-blue-600">Create Lesson Plan</a></li>
+          <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block hover:text-blue-600">My Lesson Plans</a></li>
+          <li><a href="#" class="block hover:text-blue-600">Shared Plans</a></li>
+          <li><a href="#" class="block hover:text-blue-600">Notifications</a></li>
+        </ul>
+      </details>
+
+      <details class="group">
+        <summary class="cursor-pointer hover:text-blue-600">Admin</summary>
+        <ul class="ml-4 mt-1 space-y-1">
+          <li><a href="#" class="block hover:text-blue-600">Review Lesson Plans</a></li>
+          <li><a href="#" class="block hover:text-blue-600">Approve / Reject Plans</a></li>
+          <li><a href="#" class="block hover:text-blue-600">Coverage Reports</a></li>
+          <li><a href="#" class="block hover:text-blue-600">Manage Teachers</a></li>
+        </ul>
+      </details>
+
+      <details class="group">
+        <summary class="cursor-pointer hover:text-blue-600">ICT Officer</summary>
+        <ul class="ml-4 mt-1 space-y-1">
+          <li><a href="#" class="block hover:text-blue-600">User Management</a></li>
+          <li><a href="#" class="block hover:text-blue-600">System Backups</a></li>
+          <li><a href="#" class="block hover:text-blue-600">Activity Logs</a></li>
+        </ul>
+      </details>
+
+      <a href="#" class="hover:text-blue-600">Help</a>
+      {% if user.is_authenticated %}
+      <a href="{% url 'accounts:logout' %}" class="hover:text-blue-600">Logout</a>
+      {% else %}
+      <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="pt-24 px-6 min-h-screen">
+  <!-- Messages -->
+    {% if messages %}
+      <div class="mx-auto space-y-2 mb-6">
+        {% for message in messages %}
+          <div
+            class="p-2 text-sm font-semibold rounded
+                {% if message.tags == 'error' %}bg-red-200 text-red-800
+                {% elif message.tags == 'success' %}bg-green-200 text-green-900
+                {% elif message.tags == 'info' %}bg-blue-200 text-blue-900
+                {% elif message.tags == 'warning' %}bg-yellow-200 text-yellow-900
+                {% else %}bg-gray-200 text-gray-800{% endif %}">
+            {{ message }}
+            <span class="float-right cursor-pointer hover:scale-125 ease-in transition" onclick="this.parentElement.remove();">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t mt-8 py-4 text-center text-sm text-gray-500">
+    &copy; {{ now|date:"Y" }} SmartLesson Planner. All rights reserved.
+  </footer>
+
+  <!-- Dropdown hover delay fix + Mobile toggle -->
+  <script>
+    // Fix dropdown flicker on hover
+    document.querySelectorAll('.group').forEach(group => {
+      let timeout;
+      group.addEventListener('mouseenter', () => {
+        clearTimeout(timeout);
+        group.querySelector('ul')?.classList.add('opacity-100', 'visible');
+      });
+      group.addEventListener('mouseleave', () => {
+        timeout = setTimeout(() => {
+          group.querySelector('ul')?.classList.remove('opacity-100', 'visible');
+        }, 150);
+      });
+    });
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+Perfect — here’s a comprehensive yet clear explanation of all user roles in your SmartLesson Planner: A Digital System for Competency-Based Lesson Planning and Supervision in Kenyan Schools.
+
+The roles are:
+1️⃣ Teacher
+2️⃣ Administrator (HOD or Principal)
+3️⃣ ICT Officer
+
+Each plays a distinct but connected role in the digital lesson planning ecosystem.
+Below is a detailed explanation of each — their responsibilities, key functions, and how they interact within the system.
+
+1. Teacher Module
+    Overview
+
+    The Teacher is the primary user of the SmartLesson Planner.
+    This role focuses on creating, managing, and submitting CBC-aligned lesson plans for review and approval.
+    It replaces the traditional handwritten lesson books used in Kenyan schools.
+
+    Core Responsibilities
+
+    Digital Lesson Creation:
+    Teachers prepare lesson plans directly in the system using structured digital forms aligned to the CBC format (learning outcomes, activities, assessment, etc.).
+
+    Editing and Updating:
+    They can edit their lesson plans anytime and update them as teaching progresses.
+
+    Lesson Plan Storage:
+    Plans are automatically stored in the system database, reducing the risk of data loss and ensuring accessibility anywhere.
+
+    Plan Sharing:
+    Teachers can share lesson plans with colleagues for collaboration or mentorship.
+
+    Notifications:
+    Receive system alerts about feedback from administrators or plan approval/rejection.
+
+    Tracking Feedback:
+    View comments from HODs or admins for continuous improvement.
+
+    Key Features (from your UI):
+
+    Create Lesson Plan → Start a new CBC lesson plan.
+
+    My Lesson Plans → View all personal lesson plans and their approval status.
+
+    Shared Plans → Access plans shared by other teachers for reference.
+
+    Notifications → Alerts for feedback, updates, and system notices.
+
+    Value to Teachers
+
+    ✅ Saves time and paperwork
+    ✅ Ensures CBC compliance
+    ✅ Encourages collaboration
+    ✅ Makes lesson review fast and transparent
+
+2. Administrator (HOD / Principal) Module
+    Overview
+
+    The Administrator role represents Heads of Department (HODs), Deputy Principals, or Principals responsible for supervising and monitoring teaching activities.
+    They ensure that all submitted lesson plans meet quality standards and are implemented effectively.
+
+    Core Responsibilities
+
+    Review and Approval:
+    Review teachers’ submitted lesson plans to ensure alignment with CBC requirements and approve or reject with comments.
+
+    Supervision:
+    Monitor which teachers have submitted plans and track those pending or overdue.
+
+    Coverage Reports:
+    Generate reports showing subject or class coverage, progress, and areas needing attention.
+
+    Manage Teachers:
+    Add, edit, or deactivate teacher accounts where necessary.
+
+    Provide Feedback:
+    Comment on lesson plans to guide teachers toward improvement.
+
+    Key Features (from your UI):
+
+    Review Lesson Plans → Access submitted plans for review.
+
+    Approve / Reject Plans → Provide feedback and manage plan approval.
+
+    Coverage Reports → View statistics and summaries of teaching progress.
+
+    Manage Teachers → Control teacher accounts, roles, and permissions.
+
+    Value to Administrators
+
+    ✅ Simplifies supervision
+    ✅ Enhances accountability and transparency
+    ✅ Reduces paperwork for tracking progress
+    ✅ Provides instant access to reports and records
+
+3. ICT Officer Module
+    Overview
+
+    The ICT Officer manages the technical and operational aspects of the SmartLesson Planner.
+    They ensure the system runs smoothly, securely, and is accessible to all users.
+    This role is particularly relevant in schools implementing digital platforms for the first time.
+
+    Core Responsibilities
+
+    User Management:
+    Create, edit, and deactivate user accounts (teachers and admins). Assign appropriate roles and permissions.
+
+    System Maintenance:
+    Conduct regular system updates, manage backups, and ensure data security.
+
+    Activity Monitoring:
+    Track user logins, plan submissions, and activity logs for accountability.
+
+    Support and Troubleshooting:
+    Help users resolve login, access, or technical issues.
+
+    Backup Management:
+    Schedule regular system backups to prevent data loss.
+
+    Key Features (from your UI):
+
+    User Management → Add, update, or delete users and assign roles.
+
+    System Backups → Create and restore system backups for data safety.
+
+    Activity Logs → View all system operations and user activity.
+
+    Value to ICT Officers
+
+    ✅ Ensures system reliability and uptime
+    ✅ Provides data integrity and backups
+    ✅ Enhances user security and privacy
+    ✅ Offers clear audit trails of all actions
+
+🔄 How These Roles Interact
+Function	                Teacher	Administrator	ICT Officer
+Create lesson plans	           ✅	      ❌	        ❌
+Submit plans for review	       ✅	      ❌	        ❌
+Approve or reject plans	       ❌	      ✅	        ❌
+Comment on plans	           ❌	      ✅	        ❌
+Generate reports	           ❌	      ✅	        ❌
+Manage users	               ❌	      ❌	        ✅
+Backup system data	           ❌	      ❌	        ✅
+Monitor activity logs	       ❌	      ❌	        ✅
