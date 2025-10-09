@@ -36,7 +36,7 @@
       <!-- Desktop Menu -->
       <ul class="hidden md:flex space-x-6 font-medium">
         <li><a href="/" class="hover:text-blue-600">Home</a></li>
-        <li><a href="#" class="hover:text-blue-600">Dashboard</a></li>
+        <li><a href="{% url 'core:dashboard' %}" class="hover:text-blue-600">Dashboard</a></li>
         <li><a href="#" class="hover:text-blue-600">Profile</a></li>
 
         <!-- Teacher Dropdown -->
@@ -56,7 +56,7 @@
           <button class="hover:text-blue-600 flex items-center gap-1">Admin ▾</button>
           <ul
             class="absolute left-0 pt-2 w-56 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
-            <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block px-4 py-2 hover:bg-blue-50">Review Lesson Plans</a></li>
+            <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block px-4 py-2 hover:bg-blue-50">Review Lesson Plans</a></li>
             <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Approve / Reject Plans</a></li>
             <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Coverage Reports</a></li>
             <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Manage Teachers</a></li>
@@ -68,7 +68,7 @@
           <button class="hover:text-blue-600 flex items-center gap-1">ICT Officer ▾</button>
           <ul
             class="absolute left-0 pt-2 w-52 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">User Management</a></li>
+            <li><a href="{% url 'accounts:manage_users' %}" class="block px-4 py-2 hover:bg-blue-50">User Management</a></li>
             <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">System Backups</a></li>
             <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Activity Logs</a></li>
           </ul>
@@ -87,7 +87,7 @@
     <div id="mobile-menu"
          class="hidden md:hidden bg-white shadow-md border-t flex flex-col space-y-2 py-3 px-6 font-medium">
       <a href="/" class="hover:text-blue-600">Home</a>
-      <a href="#" class="hover:text-blue-600">Dashboard</a>
+      <a href="{% url 'core:dashboard' %}" class="hover:text-blue-600">Dashboard</a>
       <a href="#" class="hover:text-blue-600">Profile</a>
 
       <details class="group">
@@ -103,7 +103,7 @@
       <details class="group">
         <summary class="cursor-pointer hover:text-blue-600">Admin</summary>
         <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="#" class="block hover:text-blue-600">Review Lesson Plans</a></li>
+          <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block hover:text-blue-600">Review Lesson Plans</a></li>
           <li><a href="#" class="block hover:text-blue-600">Approve / Reject Plans</a></li>
           <li><a href="#" class="block hover:text-blue-600">Coverage Reports</a></li>
           <li><a href="#" class="block hover:text-blue-600">Manage Teachers</a></li>
@@ -113,7 +113,7 @@
       <details class="group">
         <summary class="cursor-pointer hover:text-blue-600">ICT Officer</summary>
         <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="#" class="block hover:text-blue-600">User Management</a></li>
+          <li><a href="{% url 'accounts:manage_users' %}" class="block hover:text-blue-600">User Management</a></li>
           <li><a href="#" class="block hover:text-blue-600">System Backups</a></li>
           <li><a href="#" class="block hover:text-blue-600">Activity Logs</a></li>
         </ul>

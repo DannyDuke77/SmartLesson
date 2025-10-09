@@ -4,9 +4,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-6">
+<div class="max-w-6xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-6">
     {% if request.user.profile.user_role == 'teacher' %}
-        <h2 class="text-2xl font-bold text-blue-600 mb-4">My Lesson Plans</h2>
+        <h2 class="text-2xl flex justify-between font-bold text-blue-600 mb-4">My Lesson Plans
+          <span>
+            <a href="{% url 'lessonplans:create_lesson_plan' %}" class="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">+ New Plan</a>
+          </span>
+        </h2>
         <p class="text-gray-600 mb-6">Here are all the lesson plans you have created. You can view details or print each plan.</p>
     {% elif request.user.profile.user_role == 'admin' or request.user.profile.user_role == 'ict_officer' %}
         <h2 class="text-2xl font-bold text-blue-600 mb-4">Review Lesson Plans</h2>
@@ -22,7 +26,7 @@
             <th class="py-2 px-4">Subject</th>
             <th class="py-2 px-4">Grade</th>
             <th class="py-2 px-4">Lesson Title</th>
-            <th class="py-2 px-4">Status</th>
+            <th class="py-2 px-4 text-center">Status</th>
             <th class="py-2 px-4 text-center">Action</th>
           </tr>
         </thead>
@@ -32,8 +36,8 @@
               <td class="py-2 px-4">{{ plan.lesson_date|date:"M d, Y" }}</td>
               <td class="py-2 px-4">{{ plan.subject }}</td>
               <td class="py-2 px-4">{{ plan.grade_level }}</td>
-              <td class="py-2 px-4 line-clamp-1 lg:line-clamp-none">{{ plan.lesson_title }}</td>
-              <td class="py-2 px-4">
+              <td class="py-2 px-4">{{ plan.lesson_title }}</td>
+              <td class="py-2 px-4 text-center">
                 <span class="px-2 py-1 rounded text-xs font-semibold 
                   {% if plan.status == 'approved' %}bg-green-100 text-green-700
                   {% elif plan.status == 'rejected' %}bg-red-100 text-red-700
@@ -43,6 +47,11 @@
               </td>
               <td class="py-2 px-4 text-center space-x-3">
                 <a href="{% url 'lessonplans:lesson_plan_detail' plan.slug %}" class="text-blue-600 hover:underline">View</a>
+                {% if plan.status == 'approved' %}
+                  <a href="{% url 'lessonplans:lesson_plan_detail' plan.slug %}#admin-feedback" class="text-blue-600 hover:underline">Feedback</a>
+                {% else %}
+                  <a href="{% url 'lessonplans:edit_lesson_plan' plan.slug %}" class="text-blue-600 hover:underline">Edit</a>
+                {% endif %}
                 <a href="{% url 'lessonplans:lesson_plan_detail' plan.slug %}#print" class="text-blue-600 hover:underline">Print</a>
               </td>
             </tr>
@@ -52,27 +61,25 @@
     </div>
 
     <!-- PAGINATION -->
-    {% if page_obj.paginator.num_pages > 1 %}
-    <div class="flex justify-center items-center space-x-2 mt-6">
-      {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" 
-           class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">« Prev</a>
-      {% endif %}
-
-      {% for num in page_obj.paginator.page_range %}
-        {% if num == page_obj.number %}
-          <span class="px-3 py-1 bg-blue-600 text-white rounded-lg font-medium">{{ num }}</span>
-        {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
-          <a href="?page={{ num }}" class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">{{ num }}</a>
+      <div class="flex justify-center items-center space-x-2 mt-6">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" 
+            class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">« Prev</a>
         {% endif %}
-      {% endfor %}
 
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" 
-           class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Next »</a>
-      {% endif %}
-    </div>
-    {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          {% if num == page_obj.number %}
+            <span class="px-3 py-1 bg-blue-600 text-white rounded-lg font-medium">Page {{ num }} of {{ page_obj.paginator.num_pages }}</span>
+          {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+            <a href="?page={{ num }}" class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" 
+            class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Next »</a>
+        {% endif %}
+      </div>
 
   {% else %}
     <p class="text-gray-600 text-center py-6">You haven’t created any lesson plans yet.</p>

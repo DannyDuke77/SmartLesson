@@ -13,11 +13,10 @@
 
   <div class="mt-8 space-x-4">
     {% if user.is_authenticated %}
-      <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-md transition">Dashboard</a>
+      <a href="{% url 'core:dashboard' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-md transition">Dashboard</a>
       <a href="{% url 'accounts:logout' %}" class="bg-white border border-blue-600 hover:bg-blue-50 text-blue-600 font-semibold py-3 px-6 rounded-full shadow-md transition">Logout</a>
     {% else %}
       <a href="{% url 'accounts:login' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-md transition">Login</a>
-      <a href="{% url 'accounts:signup' %}" class="bg-white border border-blue-600 hover:bg-blue-50 text-blue-600 font-semibold py-3 px-6 rounded-full shadow-md transition">Register</a>
     {% endif %}
   </div>
 </section>
@@ -46,7 +45,9 @@
       <p class="text-gray-600 text-center mb-4">
         Enables teachers to create, edit, and store CBC-aligned lesson plans digitally, share them with colleagues, and receive feedback from supervisors.
       </p>
-      <a href="#" class="block text-center text-blue-600 hover:underline font-medium">Explore →</a>
+      {% if user.profile.user_role == 'teacher' %}
+        <a href="{% url 'lessonplans:lesson_plan_list' %}" class="block text-center text-blue-600 hover:underline font-medium">Explore →</a>
+      {% endif %}
     </div>
 
     <!-- Admin Card -->
@@ -63,7 +64,9 @@
       <p class="text-gray-600 text-center mb-4">
         Designed for HODs and administrators to review, approve, or reject lesson plans, and generate comprehensive coverage and progress reports.
       </p>
-      <a href="#" class="block text-center text-green-600 hover:underline font-medium">Manage →</a>
+      {% if request.user.profile.user_role == 'admin' %}
+        <a href="{% url 'core:dashboard' %}" class="block text-center text-green-600 hover:underline font-medium">Manage →</a>
+      {% endif %}
     </div>
 
     <!-- ICT Officer Card -->
@@ -91,7 +94,9 @@
       <p class="text-gray-600 text-center mb-4">
         Ensures smooth operation of the system by handling user management, backups, and monitoring system activities securely.
       </p>
-      <a href="#" class="block text-center text-purple-600 hover:underline font-medium">View Tools →</a>
+      {% if request.user.profile.user_role == 'ict_officer' %}
+      <a href="{% url 'core:dashboard' %}" class="block text-center text-purple-600 hover:underline font-medium">View Tools →</a>
+      {% endif %}
     </div>
   </div>
 </section>

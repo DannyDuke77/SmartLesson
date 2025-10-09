@@ -66,6 +66,7 @@ class LessonPlan(models.Model):
     reviewed_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_lessons'
     )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
 
     # ---------- Metadata ----------
     created_at = models.DateTimeField(auto_now_add=True)
