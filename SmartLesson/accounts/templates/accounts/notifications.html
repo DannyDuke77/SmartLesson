@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10 space-x-4">
+  <h1 class="text-2xl font-semibold text-gray-800 mb-6">Notifications</h1>
+  <p class="text-red-500 mb-6 italic">Mark notifications as read first to view feedback.</p>
+
+    {% if notifications %}
+        <div class="bg-white shadow rounded-xl divide-y">
+            {% for n in notifications %}
+                <div class="p-4 items-start hover:bg-gray-50 transition">
+                    <div>
+                        <p class="text-gray-800">{{ n.message }}</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <p class="text-sm text-gray-500 mt-1">{{ n.created_at|date:"M d, Y H:i" }}</p>
+
+                        {% if not n.is_read %}
+                            <form method="post" action="{% url 'accounts:mark_notification_read' n.id %}">
+                            {% csrf_token %}
+                                <button class="text-blue-600 text-sm hover:underline">Mark as read</button>
+                            </form>
+                        {% else %}
+                            <div class="flex items-center">
+                                <p class="text-sm text-gray-500">Marked as read</p>
+                                <a href="{% url 'lessonplans:lesson_plan_detail' n.lesson_plan.slug %}#admin-feedback" class="ml-4 text-blue-600 text-sm hover:underline">View Feedback</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+    <p class="text-gray-600 bg-white p-6 rounded-xl shadow text-center">No notifications yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

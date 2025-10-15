@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% block title %}Help & Support{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white shadow-md rounded-2xl p-8 mt-10">
+
+  <h1 class="text-2xl md:text-3xl font-bold text-blue-700 mb-6 text-center">
+    Help & Support
+  </h1>
+  <p class="text-gray-600 text-center mb-10">
+    Find answers to common questions and learn how to get the most out of the SmartLesson Planner.
+  </p>
+
+  <!-- Quick Navigation -->
+  <div class="grid md:grid-cols-3 gap-6 mb-10 text-center">
+    <a href="#getting-started" class="block p-4 border rounded-xl hover:bg-blue-50 transition">
+      <h3 class="font-semibold text-blue-700 mb-1">Getting Started</h3>
+      <p class="text-sm text-gray-500">Learn the basics of using SmartLesson Planner</p>
+    </a>
+    <a href="#faqs" class="block p-4 border rounded-xl hover:bg-blue-50 transition">
+      <h3 class="font-semibold text-blue-700 mb-1">FAQs</h3>
+      <p class="text-sm text-gray-500">Answers to common user questions</p>
+    </a>
+    <a href="#contact" class="block p-4 border rounded-xl hover:bg-blue-50 transition">
+      <h3 class="font-semibold text-blue-700 mb-1">Contact Support</h3>
+      <p class="text-sm text-gray-500">Reach out for direct help</p>
+    </a>
+  </div>
+
+  <!-- Getting Started -->
+  <section id="getting-started" class="mb-10">
+    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Getting Started</h2>
+    <ul class="space-y-3 text-gray-700 list-disc list-inside mb-4">
+      <li><strong>Teachers</strong> can create, edit, and submit CBC-aligned lesson plans under the “My Lesson Plans” section.</li>
+      <li><strong>Administrators</strong> can review, approve, or reject submitted plans and give feedback.</li>
+      <li><strong>ICT Officers</strong> manage user accounts, assign roles, and ensure system functionality.</li>
+      <li>Access your <strong>dashboard</strong> to view lesson plan statistics and progress summaries.</li>
+    </ul>
+  </section>
+
+  <!-- FAQs -->
+  <section id="faqs" class="mb-10">
+    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+      <div>
+        <h3 class="font-medium text-blue-700">1. How do I submit my lesson plan for approval?</h3>
+        <p class="text-gray-600">Go to <em>My Lesson Plans</em>, click “Edit” or “Create”, fill out your lesson details, and click <strong>Submit for Review</strong>. You'll receive a notification once it's reviewed.</p>
+      </div>
+      <div>
+        <h3 class="font-medium text-blue-700">2. Can I edit a lesson plan after it's approved?</h3>
+        <p class="text-gray-600">No. Approved plans are locked to preserve the approval record. However, you can duplicate and modify it as a new lesson plan if needed.</p>
+      </div>
+      <div>
+        <h3 class="font-medium text-blue-700">3. I forgot my password. What should I do?</h3>
+        <p class="text-gray-600">Click the “Forgot Password?” link on the login page to reset your password via your registered email address.</p>
+      </div>
+      <div>
+        <h3 class="font-medium text-blue-700">4. I'm not receiving notifications.</h3>
+        <p class="text-gray-600">Ensure your notifications are enabled and check the “Notifications” page under your profile. Notifications appear when your lesson plan is reviewed or when admins send updates.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact">
+    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Need More Help?</h2>
+    <p class="text-gray-700 mb-4">If you need further assistance, please contact the ICT support team:</p>
+
+    <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+      <p class="text-gray-700">
+        Email: <a href="mailto:support@smartlessonplanner.com" class="text-blue-700 hover:underline">support@smartlessonplanner.com</a><br>
+        Phone: +254 712 345 678<br>
+        Support Hours: Monday - Friday, 8:00 AM - 5:00 PM
+      </p>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

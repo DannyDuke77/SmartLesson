@@ -5,12 +5,16 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 from django.contrib.auth.models import User
 
-from .models import Profile
+from .models import Profile, Notification
 
 from .forms import SignUpForm, LoginForm
+
+from lessonplans.models import LessonPlan
 
 def ict_officer_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -50,6 +54,38 @@ def manage_users(request):
         'query': query,
     })
 
+@login_required
+def profile_view(request):
+    profile = request.user.profile
+
+    # Basic lesson stats for teachers
+    lesson_stats = {}
+    if profile.user_role == 'teacher':
+        lesson_stats = {
+            'total': LessonPlan.objects.filter(teacher=request.user).count(),
+            'approved': LessonPlan.objects.filter(teacher=request.user, status='approved').count(),
+            'submitted': LessonPlan.objects.filter(teacher=request.user, status='submitted').count(),
+            'rejected': LessonPlan.objects.filter(teacher=request.user, status='rejected').count()
+        }
+
+    if request.method == 'POST':
+        form = SignUpForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            profile.phone_number = form.cleaned_data.get('phone_number')
+            profile.tsc_number = form.cleaned_data.get('tsc_number')
+            profile.id_number = form.cleaned_data.get('id_number')
+            profile.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect('accounts:profile')
+    else:
+        form = SignUpForm(instance=request.user)
+
+    return render(request, 'accounts/profile.html', {
+        'form': form,
+        'profile': profile,
+        'lesson_stats': lesson_stats
+    })
 
 @login_required
 @ict_officer_required
@@ -135,3 +171,32 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('core:index')
+
+@login_required
+def notifications(request):
+    notifications = request.user.notifications.all()
+
+    return render(request, 'accounts/notifications.html', {'notifications': notifications})
+
+@require_POST
+@login_required
+def mark_notification_read(request, pk):
+    notification = get_object_or_404(Notification, pk=pk, user=request.user)
+    notification.is_read = True
+    notification.save(update_fields=['is_read'])
+
+    return redirect('accounts:notifications')
+
+@login_required
+def fetch_notifications(request):
+    """Return unread notifications as JSON."""
+    unread = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')[:5]
+    data = [
+        {
+            "id": n.id,
+            "message": n.message,
+            "created_at": n.created_at.strftime("%b %d, %Y %H:%M"),
+        }
+        for n in unread
+    ]
+    return JsonResponse({"notifications": data})

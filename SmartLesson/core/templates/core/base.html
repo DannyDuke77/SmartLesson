@@ -17,6 +17,52 @@
     }
   </style>
 </head>
+
+<script>
+async function fetchNotifications() {
+  try {
+    const res = await fetch("{% url 'accounts:fetch_notifications' %}");
+    const data = await res.json();
+
+    const popupDesktop = document.getElementById('notif-popup-desktop');
+    const popupMobile = document.getElementById('notif-popup-mobile');
+    const countDesktop = document.getElementById('notif-count-desktop');
+    const countMobile = document.getElementById('notif-count-mobile');
+
+    const notificationsHTML = data.notifications
+      .map(n => `
+        <div class="border-b last:border-none py-2">
+          <p class="text-gray-800 text-sm">${n.message}</p>
+          <p class="text-xs text-gray-500">${n.created_at}</p>
+        </div>
+      `).join('');
+
+    if (data.notifications.length > 0) {
+      [countDesktop, countMobile].forEach(el => {
+        if (el) {
+          el.textContent = data.notifications.length;
+          el.classList.remove('hidden');
+        }
+      });
+
+      [popupDesktop, popupMobile].forEach(popup => {
+        if (popup) {
+          popup.innerHTML = notificationsHTML;
+          popup.classList.remove('hidden');
+          setTimeout(() => popup.classList.add('hidden'), 5000); // Hide after 5 seconds
+        }
+      });
+    } else {
+      [countDesktop, countMobile].forEach(el => el?.classList.add('hidden'));
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
+</script>
+
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Navigation -->
@@ -24,20 +70,38 @@
     <div class="max-w-8xl mx-auto px-6 py-4 flex justify-between items-center">
       <a href="/" class="text-2xl font-bold text-blue-600">SmartLesson Planner</a>
 
-      <!-- Hamburger Button (Mobile) -->
-      <button id="menu-btn" class="md:hidden focus:outline-none">
-        <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" stroke-width="2"
-          viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+      <div class="flex items-center space-x-4">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'accounts:notifications' %}" class="relative md:hidden hover:text-blue-600 flex items-center gap-1">
+            <div id="notif-bell" class="relative cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+            </svg>
+              <span id="notif-count-mobile"
+                    class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 rounded-full hidden">
+              </span>
+            </div>
+
+            <!-- Floating pop-up -->
+            <div id="notif-popup-mobile" class="hidden fixed top-20 right-6 w-72 bg-white shadow-lg rounded-xl border p-4 z-50"></div>
+          </a>
+        {% endif %}
+
+        <!-- Hamburger Button (Mobile) -->
+        <button id="menu-btn" class="md:hidden focus:outline-none">
+          <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
 
       <!-- Desktop Menu -->
       <ul class="hidden md:flex space-x-6 font-medium">
         <li><a href="/" class="hover:text-blue-600">Home</a></li>
         <li><a href="{% url 'core:dashboard' %}" class="hover:text-blue-600">Dashboard</a></li>
-        <li><a href="#" class="hover:text-blue-600">Profile</a></li>
+        <li><a href="{% url 'accounts:profile' %}" class="hover:text-blue-600">Profile</a></li>
 
         <!-- Teacher Dropdown -->
         <li class="relative group">
@@ -47,7 +111,6 @@
             <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block px-4 py-2 hover:bg-blue-50">Create Lesson Plan</a></li>
             <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block px-4 py-2 hover:bg-blue-50">My Lesson Plans</a></li>
             <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Shared Plans</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Notifications</a></li>
           </ul>
         </li>
 
@@ -74,7 +137,25 @@
           </ul>
         </li>
 
-        <li><a href="#" class="hover:text-blue-600">Help</a></li>
+        <li>
+          {% if request.user.is_authenticated %}
+          <a href="{% url 'accounts:notifications' %}" class="relative hover:text-blue-600 flex items-center gap-1">
+            <div id="notif-bell" class="relative cursor-pointer">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+            </svg>
+              <span id="notif-count-desktop"
+                    class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 rounded-full hidden">
+              </span>
+            </div>
+
+            <!-- Floating pop-up -->
+            <div id="notif-popup-desktop" class="hidden fixed top-20 right-6 w-72 bg-white shadow-lg rounded-xl border p-4 z-50"></div>
+          </a>
+          {% endif %}
+        </li>
+
+        <li><a href="{% url 'core:help_and_support' %}" class="hover:text-blue-600">Help</a></li>
         {% if user.is_authenticated %}
         <li><a href="{% url 'accounts:logout' %}" class="hover:text-blue-600">Logout</a></li>
         {% else %}
@@ -93,33 +174,32 @@
       <details class="group">
         <summary class="cursor-pointer hover:text-blue-600">Teacher</summary>
         <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block hover:text-blue-600">Create Lesson Plan</a></li>
-          <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block hover:text-blue-600">My Lesson Plans</a></li>
-          <li><a href="#" class="block hover:text-blue-600">Shared Plans</a></li>
-          <li><a href="#" class="block hover:text-blue-600">Notifications</a></li>
+          <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block py-1 hover:text-blue-600 ">Create Lesson Plan</a></li>
+          <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block py-1 hover:text-blue-600">My Lesson Plans</a></li>
+          <li><a href="#" class="block py-1 hover:text-blue-600">Shared Plans</a></li>
         </ul>
       </details>
 
       <details class="group">
         <summary class="cursor-pointer hover:text-blue-600">Admin</summary>
         <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block hover:text-blue-600">Review Lesson Plans</a></li>
-          <li><a href="#" class="block hover:text-blue-600">Approve / Reject Plans</a></li>
-          <li><a href="#" class="block hover:text-blue-600">Coverage Reports</a></li>
-          <li><a href="#" class="block hover:text-blue-600">Manage Teachers</a></li>
+          <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block py-1 hover:text-blue-600">Review Lesson Plans</a></li>
+          <li><a href="#" class="block py-1 hover:text-blue-600">Approve / Reject Plans</a></li>
+          <li><a href="#" class="block py-1 hover:text-blue-600">Coverage Reports</a></li>
+          <li><a href="#" class="block py-1 hover:text-blue-600">Manage Teachers</a></li>
         </ul>
       </details>
 
       <details class="group">
         <summary class="cursor-pointer hover:text-blue-600">ICT Officer</summary>
         <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="{% url 'accounts:manage_users' %}" class="block hover:text-blue-600">User Management</a></li>
-          <li><a href="#" class="block hover:text-blue-600">System Backups</a></li>
-          <li><a href="#" class="block hover:text-blue-600">Activity Logs</a></li>
+          <li><a href="{% url 'accounts:manage_users' %}" class="block py-1 hover:text-blue-600">User Management</a></li>
+          <li><a href="#" class="block py-1 hover:text-blue-600">System Backups</a></li>
+          <li><a href="#" class="block py-1 hover:text-blue-600">Activity Logs</a></li>
         </ul>
       </details>
 
-      <a href="#" class="hover:text-blue-600">Help</a>
+      <a href="{% url 'core:help_and_support' %}" class="hover:text-blue-600">Help</a>
       {% if user.is_authenticated %}
       <a href="{% url 'accounts:logout' %}" class="hover:text-blue-600">Logout</a>
       {% else %}

@@ -10,6 +10,9 @@ from lessonplans.models import LessonPlan
 def index(request):
     return render(request, 'core/index.html')
 
+def help_and_support(request):
+    return render(request, 'core/help_and_support.html')
+
 @login_required
 def dashboard(request):
     user = request.user

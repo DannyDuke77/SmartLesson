@@ -160,6 +160,20 @@
       </span>
     </h3>
     <p class="text-gray-700 leading-relaxed">{{ lesson_plan.admin_feedback }}</p>
+    <p class="text-xs text-gray-500 mt-2">Reviewed by 
+      <span class="font-medium text-gray-700">
+        {{ lesson_plan.reviewed_by.get_full_name|default:lesson_plan.reviewed_by.username }}
+      </span> 
+      on {{ lesson_plan.reviewed_at|date:"M d, Y" }} at {{ lesson_plan.reviewed_at|time:"H:i" }}
+    </p>
+    {% if lesson_plan.status == 'rejected' %}
+    <div class="mt-4 text-sm">
+      <p class="text-red-600 italic">This lesson plan was rejected. Please make the necessary changes and resubmit.</p>
+      <a href="{% url 'lessonplans:edit_lesson_plan' lesson_plan.slug %}" class="inline-block px-3 py-1 mt-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+        Edit
+      </a>
+    </div>
+    {% endif %}
   </section>
   {% endif %}
 
