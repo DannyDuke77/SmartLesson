@@ -184,10 +184,18 @@
       ← Back to My Plans
     </a>
 
-    <button id="print" onclick="window.print()" 
-      class="px-5 py-2 text-sm rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 font-medium text-gray-700">
-      Print Lesson Plan
-    </button>
+    <div class="flex items-center gap-4">
+      <button id="print" onclick="window.print()" 
+        class="px-5 py-2 text-sm rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 font-medium text-gray-700">
+        Print Lesson Plan
+      </button>
+      {% if request.user.profile.user_role == 'admin' or request.user.profile.user_role == 'ict_officer' or request.user == lesson_plan.teacher %}
+        <a href="{% url 'lessonplans:download_lesson_plan_pdf' lesson_plan.slug %}" 
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            Download Official PDF
+        </a>
+      {% endif %}
+    </div>
   </div>
   <!-- Printing disclaimer -->
     <div class="no-print mt-4 w-full md:w-1/3 md:ml-auto">

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 
 from .models import Profile, Notification
 
-from .forms import SignUpForm, LoginForm
+from .forms import SignUpForm, LoginForm, UserUpdateForm, ProfileUpdateForm
 
 from lessonplans.models import LessonPlan
 
@@ -56,36 +56,27 @@ def manage_users(request):
 
 @login_required
 def profile_view(request):
-    profile = request.user.profile
-
-    # Basic lesson stats for teachers
-    lesson_stats = {}
-    if profile.user_role == 'teacher':
-        lesson_stats = {
-            'total': LessonPlan.objects.filter(teacher=request.user).count(),
-            'approved': LessonPlan.objects.filter(teacher=request.user, status='approved').count(),
-            'submitted': LessonPlan.objects.filter(teacher=request.user, status='submitted').count(),
-            'rejected': LessonPlan.objects.filter(teacher=request.user, status='rejected').count()
-        }
+    user = request.user
+    profile = user.profile  # assuming OneToOne relationship
 
     if request.method == 'POST':
-        form = SignUpForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            profile.phone_number = form.cleaned_data.get('phone_number')
-            profile.tsc_number = form.cleaned_data.get('tsc_number')
-            profile.id_number = form.cleaned_data.get('id_number')
-            profile.save()
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = ProfileUpdateForm(request.POST, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             messages.success(request, "Your profile has been updated successfully.")
             return redirect('accounts:profile')
     else:
-        form = SignUpForm(instance=request.user)
+        user_form = UserUpdateForm(instance=user)
+        profile_form = ProfileUpdateForm(instance=profile)
 
     return render(request, 'accounts/profile.html', {
-        'form': form,
-        'profile': profile,
-        'lesson_stats': lesson_stats
+        'user_form': user_form,
+        'profile_form': profile_form,
     })
+
 
 @login_required
 @ict_officer_required

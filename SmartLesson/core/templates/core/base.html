@@ -110,7 +110,6 @@ setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
             class="absolute left-0 pt-2 w-48 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
             <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block px-4 py-2 hover:bg-blue-50">Create Lesson Plan</a></li>
             <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block px-4 py-2 hover:bg-blue-50">My Lesson Plans</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Shared Plans</a></li>
           </ul>
         </li>
 
@@ -120,9 +119,7 @@ setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
           <ul
             class="absolute left-0 pt-2 w-56 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
             <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block px-4 py-2 hover:bg-blue-50">Review Lesson Plans</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Approve / Reject Plans</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Coverage Reports</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Manage Teachers</a></li>
+            <li><a href="{% url 'lessonplans:coverage_reports' %}" class="block px-4 py-2 hover:bg-blue-50">Coverage Reports</a></li>
           </ul>
         </li>
 
@@ -132,8 +129,6 @@ setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
           <ul
             class="absolute left-0 pt-2 w-52 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
             <li><a href="{% url 'accounts:manage_users' %}" class="block px-4 py-2 hover:bg-blue-50">User Management</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">System Backups</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-blue-50">Activity Logs</a></li>
           </ul>
         </li>
 
@@ -169,14 +164,13 @@ setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
          class="hidden md:hidden bg-white shadow-md border-t flex flex-col space-y-2 py-3 px-6 font-medium">
       <a href="/" class="hover:text-blue-600">Home</a>
       <a href="{% url 'core:dashboard' %}" class="hover:text-blue-600">Dashboard</a>
-      <a href="#" class="hover:text-blue-600">Profile</a>
+      <a href="{% url 'accounts:profile' %}" class="hover:text-blue-600">Profile</a>
 
       <details class="group">
         <summary class="cursor-pointer hover:text-blue-600">Teacher</summary>
         <ul class="ml-4 mt-1 space-y-1">
           <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block py-1 hover:text-blue-600 ">Create Lesson Plan</a></li>
           <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block py-1 hover:text-blue-600">My Lesson Plans</a></li>
-          <li><a href="#" class="block py-1 hover:text-blue-600">Shared Plans</a></li>
         </ul>
       </details>
 
@@ -184,9 +178,7 @@ setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
         <summary class="cursor-pointer hover:text-blue-600">Admin</summary>
         <ul class="ml-4 mt-1 space-y-1">
           <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block py-1 hover:text-blue-600">Review Lesson Plans</a></li>
-          <li><a href="#" class="block py-1 hover:text-blue-600">Approve / Reject Plans</a></li>
-          <li><a href="#" class="block py-1 hover:text-blue-600">Coverage Reports</a></li>
-          <li><a href="#" class="block py-1 hover:text-blue-600">Manage Teachers</a></li>
+          <li><a href="{% url 'lessonplans:coverage_reports' %}" class="block py-1 hover:text-blue-600">Coverage Reports</a></li>
         </ul>
       </details>
 
@@ -194,8 +186,6 @@ setInterval(fetchNotifications, 3000); // Fetch notifications every 3 seconds
         <summary class="cursor-pointer hover:text-blue-600">ICT Officer</summary>
         <ul class="ml-4 mt-1 space-y-1">
           <li><a href="{% url 'accounts:manage_users' %}" class="block py-1 hover:text-blue-600">User Management</a></li>
-          <li><a href="#" class="block py-1 hover:text-blue-600">System Backups</a></li>
-          <li><a href="#" class="block py-1 hover:text-blue-600">Activity Logs</a></li>
         </ul>
       </details>
 

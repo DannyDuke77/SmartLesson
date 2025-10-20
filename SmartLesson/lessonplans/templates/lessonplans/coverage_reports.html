@@ -1,0 +1,180 @@
+{% extends 'core/base.html' %}
+{% block title %}Coverage Reports{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto mt-10 px-6">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800">Coverage Reports</h1>
+      <p class="text-gray-500 text-sm">Monitor lesson plan submission and approval progress</p>
+    </div>
+    <div class="flex gap-2 mt-4 md:mt-0">
+      <a href="{% url 'lessonplans:export_pdf' %}" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition">
+        Export PDF
+      </a>
+      <a href="{% url 'lessonplans:export_excel' %}" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition">
+        Export Excel
+      </a>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-blue-50 p-5 rounded-2xl shadow text-center">
+      <p class="text-3xl font-semibold text-blue-700">{{ stats.total }}</p>
+      <p class="text-gray-600 font-medium">Total Plans</p>
+    </div>
+    <div class="bg-green-50 p-5 rounded-2xl shadow text-center">
+      <p class="text-3xl font-semibold text-green-700">{{ stats.approved }}</p>
+      <p class="text-gray-600 font-medium">Approved</p>
+    </div>
+    <div class="bg-yellow-50 p-5 rounded-2xl shadow text-center">
+      <p class="text-3xl font-semibold text-yellow-700">{{ stats.pending }}</p>
+      <p class="text-gray-600 font-medium">Pending</p>
+    </div>
+    <div class="bg-red-50 p-5 rounded-2xl shadow text-center">
+      <p class="text-3xl font-semibold text-red-700">{{ stats.rejected }}</p>
+      <p class="text-gray-600 font-medium">Rejected</p>
+    </div>
+  </div>
+
+  <!-- Overall Coverage -->
+  <div class="bg-white p-6 rounded-xl shadow mb-8">
+    <h2 class="text-lg font-semibold text-gray-700 mb-3">Overall Coverage</h2>
+    <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+      <div class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: {{ stats.coverage }}%"></div>
+    </div>
+    <p class="text-gray-600 text-sm">Coverage: <span class="font-semibold text-gray-800">{{ stats.coverage }}%</span></p>
+  </div>
+
+  <!-- Filters -->
+    <form method="get" class="bg-white p-6 rounded-xl shadow mb-8 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+
+        <!-- Teacher Search with Icon -->
+        <div class="relative col-span-1 md:col-span-1">
+            <input type="text" 
+                name="teacher" 
+                value="{{ request.GET.teacher }}" 
+                placeholder="Search teacher..."
+                class="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onkeydown="if(event.key === 'Enter') this.form.submit()">
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+        
+        <!-- Subject -->
+        <select name="subject" onchange="this.form.submit()" 
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">All Subjects</option>
+            {% for subject in subject_choices %}
+                <option value="{{ subject }}" {% if request.GET.subject == subject %}selected{% endif %}>{{ subject }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Grade -->
+        <select name="grade_level" onchange="this.form.submit()" 
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">All Grades</option>
+            {% for grade in grade_levels %}
+                <option value="{{ grade }}" {% if request.GET.grade_level == grade %}selected{% endif %}>{{ grade | title }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Term -->
+        <select name="term" onchange="this.form.submit()" 
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">All Terms</option>
+            <option value="1" {% if request.GET.term == '1' %}selected{% endif %}>Term 1</option>
+            <option value="2" {% if request.GET.term == '2' %}selected{% endif %}>Term 2</option>
+            <option value="3" {% if request.GET.term == '3' %}selected{% endif %}>Term 3</option>
+        </select>
+
+        <!-- Status -->
+        <select name="status" onchange="this.form.submit()" 
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">All Statuses</option>
+            {% for status in status_choices %}
+            <option value="{{ status }}" {% if request.GET.status == status %}selected{% endif %}>{{ status | title }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Clear Button -->
+        <div class="flex justify-end col-span-1 md:col-span-5">
+            <a href="{% url 'lessonplans:coverage_reports' %}#results" 
+            class="bg-red-600 text-white px-6 py-2 w-full md:w-auto text-center rounded-lg hover:bg-red-700 transition">
+            Clear
+            </a>
+        </div>
+
+    </form>
+
+  <!-- Table -->
+    <div id="results" class="bg-white shadow-md rounded-xl overflow-x-auto">
+        <table class="min-w-full border-collapse">
+            <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
+            <tr>
+                <th class="py-3 px-4 text-left">Teacher</th>
+                <th class="py-3 px-4 text-left">Subject</th>
+                <th class="py-3 px-4 text-left">Grade</th>
+                <th class="py-3 px-4 text-center">Term</th>
+                <th class="py-3 px-4 text-center">Week</th>
+                <th class="py-3 px-4 text-center">Status</th>
+                <th class="py-3 px-4 text-left">Reviewed By</th>
+                <th class="py-3 px-4 text-center">Reviewed At</th>
+            </tr>
+            </thead>
+            <tbody class="text-gray-700 text-sm">
+            {% for plan in page_obj %}
+            <tr class="hover:bg-gray-50 transition">
+                <td class="py-3 px-4">{{ plan.teacher.get_full_name|default:plan.teacher.username }}</td>
+                <td class="py-3 px-4">{{ plan.get_subject_display }}</td>
+                <td class="py-3 px-4">{{ plan.grade_level }}</td>
+                <td class="py-3 px-4 text-center">{{ plan.term }}</td>
+                <td class="py-3 px-4 text-center">{{ plan.week }}</td>
+                <td class="py-3 px-4 text-center">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold
+                    {% if plan.status == 'approved' %} bg-green-100 text-green-700
+                    {% elif plan.status == 'submitted' %} bg-yellow-100 text-yellow-700
+                    {% elif plan.status == 'rejected' %} bg-red-100 text-red-700
+                    {% else %} bg-gray-100 text-gray-700 {% endif %}">
+                    {{ plan.status|title }}
+                </span>
+                </td>
+                <td class="py-3 px-4">{{ plan.reviewed_by.get_full_name|default:"—" }}</td>
+                <td class="py-3 px-4 text-center">{{ plan.reviewed_at|date:"Y-m-d" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center text-gray-500 py-6">No records found</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+  <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <div class="flex justify-between items-center mt-6">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">← Previous</a>
+            {% else %}
+                <span class="bg-gray-100 text-gray-400 px-4 py-2 rounded-lg">← Previous</span>
+            {% endif %}
+
+            <span class="text-sm text-gray-600">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Next →</a>
+            {% else %}
+                <span class="bg-gray-100 text-gray-400 px-4 py-2 rounded-lg">Next →</span>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

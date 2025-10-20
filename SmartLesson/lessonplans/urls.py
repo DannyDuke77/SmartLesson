@@ -10,4 +10,8 @@ urlpatterns = [
     path('list/', views.lesson_plan_list, name='lesson_plan_list'),
     path('detail/<slug:slug>/', views.lesson_plan_detail, name='lesson_plan_detail'),
     path('update-status/<slug:slug>/', views.update_lesson_plan_status, name='update_lesson_plan_status'),
+    path('download/<slug:slug>/', views.download_lesson_plan_pdf, name='download_lesson_plan_pdf'),
+    path('coverage-reports/', views.coverage_reports, name='coverage_reports'),
+    path('coverage-reports/export/pdf/', views.export_coverage_pdf, name='export_pdf'),
+    path('coverage-reports/export/excel/', views.export_coverage_excel, name='export_excel'),
 ]
