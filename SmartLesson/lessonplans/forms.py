@@ -18,8 +18,8 @@ class LessonPlanForm(forms.ModelForm):
             'grade_level': forms.Select(attrs={'class': INPUT_CLASSES}),
             'term': forms.NumberInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g., 1'}),
             'week': forms.NumberInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'e.g., 3'}),
-            'topic': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Main topic area'}),
-            'sub_topic': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Sub-topic area'}),
+            'strand': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Main strand area'}),
+            'sub_strand': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Sub-strand area'}),
             'lesson_title': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Lesson title'}),
 
             'general_objective': forms.Textarea(attrs={'class': INPUT_CLASSES, 'rows': 2, 'style': 'resize: none;'}),

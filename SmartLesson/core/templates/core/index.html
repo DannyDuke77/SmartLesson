@@ -16,7 +16,20 @@
       <a href="{% url 'core:dashboard' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-md transition">Dashboard</a>
       <a href="{% url 'accounts:logout' %}" class="bg-white border border-blue-600 hover:bg-blue-50 text-blue-600 font-semibold py-3 px-6 rounded-full shadow-md transition">Logout</a>
     {% else %}
-      <a href="{% url 'accounts:login' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-md transition">Login</a>
+      <li class="relative group inline-block">
+        <button class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-5 rounded-lg shadow-xl transition duration-300 ease-in-out transform hover:scale-[1.02]">
+            Login
+            <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+
+        <ul class="absolute w-56 mt-0 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 shadow-2xl rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300 ease-in-out origin-top scale-y-0 group-hover:scale-y-100">
+          <li><a href="{% url 'accounts:teacher_login' %}" class="block px-5 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-150 ease-in-out border-b border-gray-100">Teacher Login</a></li>
+          <li><a href="{% url 'accounts:ict_officer_login' %}?is_ict_officer=true" class="block px-5 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-150 ease-in-out border-b border-gray-100">ICT Officer Login</a></li>
+          <li><a href="{% url 'accounts:admin_login' %}?is_admin=true" class="block px-5 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition duration-150 ease-in-out">Administrator Login</a></li>
+        </ul>
+      </li>
     {% endif %}
   </div>
 </section>
@@ -112,13 +125,6 @@
       <p class="text-gray-600">
         School administrators and ICT officers also benefit from easier monitoring, secure data storage, and insightful analytics for informed decision-making.
       </p>
-      <a 
-      {% if user.is_authenticated %} 
-        href="#" 
-      {% else %} 
-        href="{% url 'accounts:login' %}" 
-      {% endif %} 
-      class="inline-block mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-md transition">Get Started</a>
     </div>
     <div class="text-center">
       <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="Lesson Planner" class="w-64 mx-auto">

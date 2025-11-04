@@ -2,15 +2,18 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 
+from django.urls import reverse
+
 from django.contrib.auth.models import User
 
 from .models import Profile, Notification
+
+from .decorators import role_required
 
 from .forms import SignUpForm, LoginForm, UserUpdateForm, ProfileUpdateForm
 
@@ -28,7 +31,7 @@ def ict_officer_required(view_func):
     return _wrapped_view
 
 # Create your views here.
-@login_required
+@role_required('ict_officer')
 @ict_officer_required
 def manage_users(request):
     query = request.GET.get('q', '')  # Get search term from URL
@@ -54,7 +57,7 @@ def manage_users(request):
         'query': query,
     })
 
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def profile_view(request):
     user = request.user
     profile = user.profile  # assuming OneToOne relationship
@@ -78,7 +81,7 @@ def profile_view(request):
     })
 
 
-@login_required
+@role_required('ict_officer')
 @ict_officer_required
 def create_user(request):
     if request.method == 'POST':
@@ -100,7 +103,7 @@ def create_user(request):
         'form': form,
         })
 
-@login_required
+@role_required('ict_officer')
 @ict_officer_required
 def edit_user(request, user_uuid):
     profile = get_object_or_404(Profile, uuid=user_uuid)
@@ -140,37 +143,56 @@ def edit_user(request, user_uuid):
     })
 
 
-def login_view(request):
+def login_view(request, role=None):
+    if role not in ['teacher', 'admin', 'ict_officer']:
+        messages.error(request, "Invalid login type.")
+        return redirect('core:index')
+
+    role_titles = {
+        'teacher': "Teacher Login",
+        'admin': "Administrator Login",
+        'ict_officer': "ICT Officer Login"
+    }
+    form_title = role_titles.get(role, "User Login")
+
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+
+            if user.profile.user_role != role:
+                messages.error(request, f"You are not authorized to log in as a {role.replace('_', ' ')}.")
+                return redirect(reverse(f"accounts:{role}_login"))
+
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
-            # Accept returning to ?next= parameter if present
+
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
-            
+
             return redirect('core:index')
     else:
         form = LoginForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {
+        'form': form,
+        'form_title': form_title,
+    })
 
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('core:index')
 
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def notifications(request):
     notifications = request.user.notifications.all()
 
     return render(request, 'accounts/notifications.html', {'notifications': notifications})
 
 @require_POST
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def mark_notification_read(request, pk):
     notification = get_object_or_404(Notification, pk=pk, user=request.user)
     notification.is_read = True
@@ -178,7 +200,7 @@ def mark_notification_read(request, pk):
 
     return redirect('accounts:notifications')
 
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def fetch_notifications(request):
     """Return unread notifications as JSON."""
     unread = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')[:5]

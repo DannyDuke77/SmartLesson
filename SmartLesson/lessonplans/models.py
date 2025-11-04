@@ -45,8 +45,8 @@ class LessonPlan(models.Model):
     grade_level = models.CharField(max_length=50, choices=GRADE_LEVELS)
     term = models.PositiveIntegerField()
     week = models.PositiveIntegerField()
-    topic = models.CharField(max_length=200)
-    sub_topic = models.CharField(max_length=200)
+    strand = models.CharField(max_length=200)
+    sub_strand = models.CharField(max_length=200)
     lesson_title = models.CharField(max_length=200)
     lesson_date = models.DateField()
 

@@ -9,7 +9,12 @@ app_name = 'accounts'
 urlpatterns = [
     path('create-user/', views.create_user, name='create_user'),
     path('edit/<uuid:user_uuid>/', views.edit_user, name='edit_user'),
-    path('login/', views.login_view, name='login'),
+
+    # Login paths for different roles
+    path('login/teacher/', views.login_view, {'role': 'teacher'}, name='teacher_login'),
+    path('login/admin/', views.login_view, {'role': 'admin'}, name='admin_login'),
+    path('login/ict_officer/', views.login_view, {'role': 'ict_officer'}, name='ict_officer_login'),
+    
     path('logout/', views.logout_view, name='logout'),
     path('manage/', views.manage_users, name='manage_users'),
     path('profile/', views.profile_view, name='profile'),

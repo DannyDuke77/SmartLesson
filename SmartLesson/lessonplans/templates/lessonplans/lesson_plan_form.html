@@ -2,20 +2,34 @@
 {% block title %}Create Lesson Plan{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto mt-8 px-4">
+<div class="max-w-6xl mx-auto mt-6 px-4">
   <!-- Header Section -->
-  <div class="text-center mb-10">
-    <h1 class="text-4xl font-bold text-gray-900 mb-3">Create CBC Lesson Plan</h1>
-    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Design comprehensive and structured lesson plans following the Competency-Based Curriculum framework</p>
-    <p class="text-sm text-gray-500 mt-1 text-left">Fields marked with <span class="text-red-500">*</span> are required.</p>
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+      <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Create CBC Lesson Plan</h1>
+    <p class="text-gray-600 max-w-2xl mx-auto">Design comprehensive and structured lesson plans following the Competency-Based Curriculum framework</p>
+    <div class="mt-4 flex items-center justify-center text-sm text-gray-500">
+      <span class="inline-flex items-center mr-4">
+        <span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+        Required fields
+      </span>
+      <span class="inline-flex items-center">
+        <span class="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+        Collapsible sections
+      </span>
+    </div>
   </div>
 
-  <form method="POST" class="space-y-8">
+  <form method="POST" class="space-y-6">
     {% csrf_token %}
     
     <!-- Error Display -->
     {% if form.non_field_errors %}
-      <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-sm mb-6">
+      <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
         <div class="flex items-start">
           <div class="flex-shrink-0">
             <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,7 +50,7 @@
 
     {% for field in form %}
       {% if field.errors %}
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
           <ul class="list-disc list-inside text-red-700">
             {% for error in field.errors %}
               <li><strong>{{ field.label }}:</strong> {{ error }}</li>
@@ -46,43 +60,67 @@
       {% endif %}
     {% endfor %}
 
+    <!-- Progress Indicator -->
+    <div class="sticky top-20 z-10 bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-4 mb-6">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-gray-700">Form Completion</span>
+        <span class="text-sm font-medium text-blue-600" id="progress-text">0%</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+
     <!-- Basic Details Section -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-      <button type="button" class="w-full text-left px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white"
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <button type="button" class="w-full text-left px-6 py-5 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
               onclick="toggleSection('basic-details', this)">
         <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-2xl font-bold">Basic Details</h3>
-            <p class="text-blue-100 mt-1">Essential information about your lesson</p>
+          <div class="flex items-center">
+            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900">Basic Details</h3>
+              <p class="text-gray-500 text-sm mt-1">Essential information about your lesson</p>
+            </div>
           </div>
-          <span class="text-2xl font-light transform transition-transform duration-300">−</span>
+          <span class="text-gray-400">
+            <svg class="w-6 h-6 transform transition-transform duration-300 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </span>
         </div>
       </button>
-      <div id="basic-details" class="p-8 space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div id="basic-details" class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
-            <label for="{{ form.subject.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label for="{{ form.subject.id_for_label }}" class="block text-sm font-medium text-gray-700">
               Subject <span class="text-red-500">*</span>
             </label>
-            {{ form.subject }}
+            <div class="relative">
+              {{ form.subject }}
+            </div>
           </div>
 
           <div class="space-y-2">
-            <label for="{{ form.grade_level.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label for="{{ form.grade_level.id_for_label }}" class="block text-sm font-medium text-gray-700">
               Grade Level <span class="text-red-500">*</span>
             </label>
             {{ form.grade_level }}
           </div>
 
           <div class="space-y-2">
-            <label for="{{ form.term.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label for="{{ form.term.id_for_label }}" class="block text-sm font-medium text-gray-700">
               Term <span class="text-red-500">*</span>
             </label>
             {{ form.term }}
           </div>
 
           <div class="space-y-2">
-            <label for="{{ form.week.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label for="{{ form.week.id_for_label }}" class="block text-sm font-medium text-gray-700">
               Week <span class="text-red-500">*</span>
             </label>
             {{ form.week }}
@@ -91,123 +129,152 @@
 
         <div class="grid grid-cols-1 gap-6 pt-4 border-t border-gray-200">
           <div class="space-y-2">
-            <label for="{{ form.topic.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              Topic <span class="text-red-500">*</span>
+            <label for="{{ form.strand.id_for_label }}" class="block text-sm font-medium text-gray-700">
+              Strand <span class="text-red-500">*</span>
             </label>
-            {{ form.topic }}
+            {{ form.strand }}
           </div>
 
           <div class="space-y-2">
-            <label for="{{ form.sub_topic.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              Sub-Topic <span class="text-red-500">*</span>
+            <label for="{{ form.sub_strand.id_for_label }}" class="block text-sm font-medium text-gray-700">
+              Sub-Strand <span class="text-red-500">*</span>
             </label>
-            {{ form.sub_topic }}
+            {{ form.sub_strand }}
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
-            <label for="{{ form.lesson_title.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label for="{{ form.lesson_title.id_for_label }}" class="block text-sm font-medium text-gray-700">
               Lesson Title <span class="text-red-500">*</span>
             </label>
             {{ form.lesson_title }}
           </div>
 
           <div class="space-y-2">
-            <label for="{{ form.lesson_date.id_for_label }}" class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <label for="{{ form.lesson_date.id_for_label }}" class="block text-sm font-medium text-gray-700">
               Lesson Date <span class="text-red-500">*</span>
             </label>
-            {{ form.lesson_date }}
+            <div class="relative">
+              {{ form.lesson_date }}
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Lesson Components Section -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-      <button type="button" class="w-full text-left px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white"
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <button type="button" class="w-full text-left px-6 py-5 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
               onclick="toggleSection('lesson-components', this)">
         <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-2xl font-bold">Lesson Components</h3>
-            <p class="text-green-100 mt-1">Structure and learning objectives</p>
+          <div class="flex items-center">
+            <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900">Lesson Components</h3>
+              <p class="text-gray-500 text-sm mt-1">Structure and learning objectives</p>
+            </div>
           </div>
-          <span class="text-2xl font-light transform transition-transform duration-300">+</span>
+          <span class="text-gray-400">
+            <svg class="w-6 h-6 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </span>
         </div>
       </button>
-      <div id="lesson-components" class="p-8 space-y-8 hidden">
-        <div class="">
-            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+      <div id="lesson-components" class="p-6 space-y-6 hidden">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
             General Objective <span class="text-red-500">*</span>
-            </label>
-            {{ form.general_objective }}
-            <p class="text-gray-500 text-sm">{{ form.general_objective.help_text }}</p>
+          </label>
+          {{ form.general_objective }}
+          <p class="text-gray-500 text-xs mt-1">{{ form.general_objective.help_text }}</p>
         </div>
         
-        <div class="">
-            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
             Specific Learning Outcomes <span class="text-red-500">*</span>
-            </label>
-            {{ form.specific_learning_outcomes }}
-            <p class="text-gray-500 text-sm">{{ form.specific_learning_outcomes.help_text }}</p>
+          </label>
+          {{ form.specific_learning_outcomes }}
+          <p class="text-gray-500 text-xs mt-1">{{ form.specific_learning_outcomes.help_text }}</p>
         </div>
         
-        <div class="">
-            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
             Key Inquiry Question
-            </label>
-            {{ form.key_inquiry_question }}
-            <p class="text-gray-500 text-sm">{{ form.key_inquiry_question.help_text }}</p>
+          </label>
+          {{ form.key_inquiry_question }}
+          <p class="text-gray-500 text-xs mt-1">{{ form.key_inquiry_question.help_text }}</p>
         </div>
         
-        <div class="">
-            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
             Learning Resources <span class="text-red-500">*</span>
-            </label>
-            {{ form.learning_resources }}
-            <p class="text-gray-500 text-sm">{{ form.learning_resources.help_text }}</p>
+          </label>
+          {{ form.learning_resources }}
+          <p class="text-gray-500 text-xs mt-1">{{ form.learning_resources.help_text }}</p>
         </div>
         
-        <div class="">
-            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
             Introduction <span class="text-red-500">*</span>
-            </label>
-            {{ form.introduction }}
-            <p class="text-gray-500 text-sm">{{ form.introduction.help_text }}</p>
+          </label>
+          {{ form.introduction }}
+          <p class="text-gray-500 text-xs mt-1">{{ form.introduction.help_text }}</p>
         </div>
         
-        <div class="">
-            <label class="block mb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">
             Lesson Development <span class="text-red-500">*</span>
-            </label>
-            {{ form.lesson_development }}
-            <p class="text-gray-500 text-sm">{{ form.lesson_development.help_text }}</p>
+          </label>
+          {{ form.lesson_development }}
+          <p class="text-gray-500 text-xs mt-1">{{ form.lesson_development.help_text }}</p>
         </div>
       </div>
     </div>
 
     <!-- Assessment & Reflection -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-      <button type="button" class="w-full text-left px-8 py-4 bg-gradient-to-r from-purple-600 to-violet-700 text-white"
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <button type="button" class="w-full text-left px-6 py-5 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
               onclick="toggleSection('assessment-reflection', this)">
         <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-2xl font-bold">Assessment & Reflection</h3>
-            <p class="text-purple-100 mt-1">Evaluation and professional insights</p>
+          <div class="flex items-center">
+            <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900">Assessment & Reflection</h3>
+              <p class="text-gray-500 text-sm mt-1">Evaluation and professional insights</p>
+            </div>
           </div>
-          <span class="text-2xl font-light transform transition-transform duration-300">+</span>
+          <span class="text-gray-400">
+            <svg class="w-6 h-6 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </span>
         </div>
       </button>
-      <div id="assessment-reflection" class="p-8 space-y-8 hidden">
+      <div id="assessment-reflection" class="p-6 space-y-6 hidden">
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          <label class="block text-sm font-medium text-gray-700">
             Assessment <span class="text-red-500">*</span>
           </label>
           {{ form.assessment }}
         </div>
         
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          <label class="block text-sm font-medium text-gray-700">
             Reflection
           </label>
           {{ form.reflection }}
@@ -216,10 +283,13 @@
     </div>
 
     <!-- Submit Button -->
-    <div class="sticky bottom-6 mt-12">
-      <div class="max-w-6xl mx-auto flex justify-end">
+    <div class="sticky bottom-6 mt-8">
+      <div class="max-w-6xl mx-auto flex justify-between items-center bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-4">
+        <div class="text-sm text-gray-600">
+          <span id="field-count">0</span> of <span id="total-fields">0</span> required fields completed
+        </div>
         <button type="submit"
-          class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center space-x-3">
+          class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center space-x-2">
           <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
@@ -233,13 +303,61 @@
 <script>
 function toggleSection(id, button) {
   const section = document.getElementById(id);
-  const icon = button.querySelector('span');
-  const isHidden = section.classList.contains('hidden');
+  const icon = button.querySelector('span:last-child svg');
   
-  section.classList.toggle('hidden', !isHidden);
-  icon.textContent = isHidden ? '−' : '+';
-  icon.classList.toggle('rotate-0', isHidden);
-  icon.classList.toggle('rotate-90', !isHidden);
+  // Toggle both the section visibility and icon rotation
+  section.classList.toggle('hidden');
+  icon.classList.toggle('rotate-180');
 }
+
+// Form progress tracking
+document.addEventListener('DOMContentLoaded', function() {
+  const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+  const totalFields = requiredFields.length;
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  const fieldCount = document.getElementById('field-count');
+  const totalFieldsElement = document.getElementById('total-fields');
+  
+  totalFieldsElement.textContent = totalFields;
+  
+  function updateProgress() {
+    let completed = 0;
+    
+    requiredFields.forEach(field => {
+      if (field.type === 'checkbox') {
+        if (field.checked) completed++;
+      } else {
+        if (field.value.trim() !== '') completed++;
+      }
+    });
+    
+    const percentage = Math.round((completed / totalFields) * 100);
+    progressBar.style.width = `${percentage}%`;
+    progressText.textContent = `${percentage}%`;
+    fieldCount.textContent = completed;
+    
+    // Update progress bar color based on completion
+    if (percentage < 30) {
+      progressBar.classList.remove('bg-yellow-500', 'bg-green-500');
+      progressBar.classList.add('bg-red-500');
+    } else if (percentage < 70) {
+      progressBar.classList.remove('bg-red-500', 'bg-green-500');
+      progressBar.classList.add('bg-yellow-500');
+    } else {
+      progressBar.classList.remove('bg-red-500', 'bg-yellow-500');
+      progressBar.classList.add('bg-green-500');
+    }
+  }
+  
+  // Add event listeners to all required fields
+  requiredFields.forEach(field => {
+    field.addEventListener('input', updateProgress);
+    field.addEventListener('change', updateProgress);
+  });
+  
+  // Initialize progress
+  updateProgress();
+});
 </script>
 {% endblock %}

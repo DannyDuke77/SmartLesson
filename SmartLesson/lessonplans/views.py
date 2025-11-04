@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
@@ -19,9 +18,10 @@ from .models import LessonPlan
 from .forms import LessonPlanForm
 from accounts.utils import send_notification
 from accounts.models import Profile
+from accounts.decorators import role_required
 
 # Create your views here.
-@login_required
+@role_required('teacher')
 def create_lesson_plan(request):
     if request.method == 'POST':
         form = LessonPlanForm(request.POST)
@@ -46,7 +46,7 @@ def create_lesson_plan(request):
     return render(request, 'lessonplans/lesson_plan_form.html', {'form': form})
 
 
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def lesson_plan_list(request):
     user = request.user
     query = request.GET.get('q', '').strip()
@@ -80,7 +80,7 @@ def lesson_plan_list(request):
         'query': query,
     })
 
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def lesson_plan_detail(request, slug):
     """
     Displays detailed information for a single lesson plan.
@@ -92,7 +92,7 @@ def lesson_plan_detail(request, slug):
         'lesson_plan': lesson_plan
     })
 
-@login_required
+@role_required('teacher')
 def edit_lesson_plan(request, slug):
     lesson_plan = get_object_or_404(LessonPlan, slug=slug)
 
@@ -131,7 +131,7 @@ def edit_lesson_plan(request, slug):
 
     return render(request, 'lessonplans/lesson_plan_form.html', {'form': form, 'lesson_plan': lesson_plan,})
 
-@login_required
+@role_required('admin', 'ict_officer')
 def update_lesson_plan_status(request, slug):
     lesson_plan = get_object_or_404(LessonPlan, slug=slug)
 
@@ -165,7 +165,7 @@ def update_lesson_plan_status(request, slug):
         'lesson_plan': lesson_plan,
     })
 
-@login_required
+@role_required('admin', 'ict_officer')
 def coverage_reports(request):
     if request.user.profile.user_role not in ['admin', 'ict_officer']:
         messages.error(request, "You do not have permission to access this page.")
@@ -222,7 +222,7 @@ def coverage_reports(request):
     })
 
 
-@login_required
+@role_required('teacher', 'admin', 'ict_officer')
 def download_lesson_plan_pdf(request, slug):
     
     lesson_plan = get_object_or_404(LessonPlan, slug=slug)
@@ -281,8 +281,8 @@ def download_lesson_plan_pdf(request, slug):
 
     # ---- CBC Components ----
     sections = [
-        ("Topic", lesson_plan.topic),
-        ("Sub-topic", lesson_plan.sub_topic),
+        ("Strand", lesson_plan.strand),
+        ("Sub-strand", lesson_plan.sub_strand),
         ("General Objective", lesson_plan.general_objective),
         ("Specific Learning Outcomes", lesson_plan.specific_learning_outcomes),
         ("Key Inquiry Question", lesson_plan.key_inquiry_question or "—"),
@@ -314,7 +314,7 @@ def download_lesson_plan_pdf(request, slug):
 
     return response
 
-@login_required
+@role_required('admin', 'ict_officer')
 def export_coverage_pdf(request):
     plans = LessonPlan.objects.select_related('teacher', 'reviewed_by').all()
 
@@ -364,7 +364,7 @@ def export_coverage_pdf(request):
     doc.build(elements)
     return response
 
-@login_required
+@role_required('admin', 'ict_officer')
 def export_coverage_excel(request):
     plans = LessonPlan.objects.select_related('teacher', 'reviewed_by').all()
 
