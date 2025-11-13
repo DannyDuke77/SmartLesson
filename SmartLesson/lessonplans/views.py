@@ -3,7 +3,8 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Value
+from django.db.models.functions import Concat
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch
 from django.http import HttpResponse
@@ -36,7 +37,8 @@ def create_lesson_plan(request):
             for admin_profile in admins:
                 send_notification(
                     admin_profile.user,
-                    f"A new lesson plan titled '{lesson_plan.title}' has been submitted by {request.user.get_full_name() or request.user.username}."
+                    f"A new lesson plan titled '{lesson_plan.lesson_title}' has been submitted by {request.user.get_full_name() or request.user.username}.",
+                    lesson_plan
                 )
 
             messages.success(request, "Lesson plan created successfully.")
@@ -45,30 +47,36 @@ def create_lesson_plan(request):
         form = LessonPlanForm()
     return render(request, 'lessonplans/lesson_plan_form.html', {'form': form})
 
-
-@role_required('teacher', 'admin', 'ict_officer')
-def lesson_plan_list(request):
+@role_required('teacher')
+def my_lesson_plans(request):
     user = request.user
     query = request.GET.get('q', '').strip()
+    subject_filter = request.GET.get('subject', '').strip()
+    grade_filter = request.GET.get('grade_level', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    term_filter = request.GET.get('term', '').strip()
+    week_filter = request.GET.get('week', '').strip()
 
-    # Base queryset depending on user role
-    if user.profile.user_role in ['admin', 'ict_officer']:
-        lesson_plans = LessonPlan.objects.all().order_by('-created_at')
-    else:
-        lesson_plans = LessonPlan.objects.filter(teacher=user).order_by('-created_at')
+    # Only teacher's lesson plans
+    lesson_plans = LessonPlan.objects.filter(teacher=user).order_by('created_at')
 
-        # Extra safety: block teachers from forced admin view
-        if request.GET.get('from_admin') == 'true':
-            messages.error(request, "You do not have permission to access this page.")
-            return redirect('core:index')
-
+    # Apply filters
     if query:
         lesson_plans = lesson_plans.filter(
             Q(lesson_title__icontains=query) |
-            Q(subject__icontains=query) |
-            Q(grade_level__icontains=query) |
-            Q(status__icontains=query)
+            Q(strand__icontains=query) |
+            Q(sub_strand__icontains=query)
         )
+    if subject_filter:
+        lesson_plans = lesson_plans.filter(subject=subject_filter)
+    if grade_filter:
+        lesson_plans = lesson_plans.filter(grade_level=grade_filter)
+    if status_filter:
+        lesson_plans = lesson_plans.filter(status=status_filter)
+    if term_filter:
+        lesson_plans = lesson_plans.filter(term=term_filter)
+    if week_filter:
+        lesson_plans = lesson_plans.filter(week=week_filter)
 
     # Pagination
     paginator = Paginator(lesson_plans, 10)
@@ -78,6 +86,63 @@ def lesson_plan_list(request):
     return render(request, 'lessonplans/lesson_plan_list.html', {
         'page_obj': page_obj,
         'query': query,
+        'LessonPlan': LessonPlan,
+        'subject_choices': dict(LessonPlan.SUBJECT_CHOICES),
+        'status_choices': dict(LessonPlan.STATUS_CHOICES),
+        'grade_levels': dict(LessonPlan.GRADE_LEVELS),
+        'terms': LessonPlan.objects.values_list('term', flat=True).distinct().order_by('term'),
+        'weeks': LessonPlan.objects.values_list('week', flat=True).distinct().order_by('week'),
+    })
+@role_required('admin', 'ict_officer')
+def review_lesson_plans(request):
+    query = request.GET.get('q', '').strip()
+    subject_filter = request.GET.get('subject', '').strip()
+    grade_filter = request.GET.get('grade_level', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    term_filter = request.GET.get('term', '').strip()
+    week_filter = request.GET.get('week', '').strip()
+
+    # All lesson plans
+    lesson_plans = LessonPlan.objects.all().order_by('created_at')
+
+    lesson_plans = lesson_plans.annotate(
+        full_name=Concat('teacher__first_name', Value(' '), 'teacher__last_name')
+    )
+
+    # Apply filters
+    if query:
+        lesson_plans = lesson_plans.filter(
+            Q(lesson_title__icontains=query) |
+            Q(strand__icontains=query) |
+            Q(sub_strand__icontains=query) |
+            Q(full_name__icontains=query) |
+            Q(teacher__username__icontains=query)
+        )
+    if subject_filter:
+        lesson_plans = lesson_plans.filter(subject=subject_filter)
+    if grade_filter:
+        lesson_plans = lesson_plans.filter(grade_level=grade_filter)
+    if status_filter:
+        lesson_plans = lesson_plans.filter(status=status_filter)
+    if term_filter:
+        lesson_plans = lesson_plans.filter(term=term_filter)
+    if week_filter:
+        lesson_plans = lesson_plans.filter(week=week_filter)
+
+    # Pagination
+    paginator = Paginator(lesson_plans, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'lessonplans/lesson_plan_list.html', {
+        'page_obj': page_obj,
+        'query': query,
+        'LessonPlan': LessonPlan,
+        'subject_choices': dict(LessonPlan.SUBJECT_CHOICES),
+        'status_choices': dict(LessonPlan.STATUS_CHOICES),
+        'grade_levels': dict(LessonPlan.GRADE_LEVELS),
+        'terms': LessonPlan.objects.values_list('term', flat=True).distinct().order_by('term'),
+        'weeks': LessonPlan.objects.values_list('week', flat=True).distinct().order_by('week'),
     })
 
 @role_required('teacher', 'admin', 'ict_officer')

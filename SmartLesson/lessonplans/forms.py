@@ -24,17 +24,17 @@ class LessonPlanForm(forms.ModelForm):
 
             'general_objective': forms.Textarea(attrs={'class': INPUT_CLASSES, 'rows': 2, 'style': 'resize: none;'}),
 
-            'specific_learning_outcomes': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 2}),
+            'specific_learning_outcomes': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 4}),
 
             'key_inquiry_question': forms.TextInput(attrs={'class': INPUT_CLASSES, 'placeholder': 'Key question to drive inquiry'}),
 
-            'learning_resources': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 2,}),
+            'learning_resources': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 4,}),
 
             'introduction': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 2}),
 
-            'lesson_development': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 3}),
+            'lesson_development': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 4}),
 
-            'assessment': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 2}),
+            'assessment': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 4}),
             
             'reflection': forms.Textarea(attrs={'class': INPUT_CLASSES, 'style': 'resize: none;', 'rows': 2}),
         }

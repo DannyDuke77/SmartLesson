@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-6">
+<div class="max-w-7xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-6">
     {% if request.user.profile.user_role == 'teacher' %}
         <h2 class="text-2xl flex justify-between font-bold text-blue-600 mb-4">My Lesson Plans
           <span>
@@ -16,33 +16,109 @@
         <h2 class="text-2xl font-bold text-blue-600 mb-4">Review Lesson Plans</h2>
         <p class="text-gray-600 mb-6">Here are all the lesson plans submitted by teachers for your review.</p>
     {% endif %}
-    <form method="get" class="mb-6 flex items-center justify-between bg-white px-3 rounded-lg shadow-sm">
-      <input 
-        type="text" 
-        name="q" 
-        value="{{ query|default:'' }}" 
-        placeholder="Search lesson plans (title, subject, grade, status)..." 
-        class="w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+    <form method="get" class="mb-6 flex flex-wrap items-center justify-between bg-white px-3 py-3 rounded-lg shadow-sm gap-2">
+      <div class="flex flex-1 min-w-[250px]">
+        <!-- Search Input -->
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ query|default:'' }}" 
+          placeholder="Search lesson plans..." 
+          class="flex-1 px-3 py-2 rounded-l-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        >
+        <!-- Buttons -->
+        <button 
+          type="submit" 
+          class="px-4 py-2 bg-blue-600 text-white font-medium rounded-r-md hover:bg-blue-700 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Subject Filter -->
+      <select 
+        name="subject" 
+        class="px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        onchange="this.form.submit()"
       >
-      <button 
-        type="submit" 
-        class="ml-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+        <option value="">All Subjects</option>
+        {% for subject in subject_choices %}
+          <option value="{{ subject }}" {% if subject == request.GET.subject %}selected{% endif %}>{{ subject }}</option>
+        {% endfor %}
+      </select>
+
+
+      <!-- Grade Level Filter -->
+      <select 
+        name="grade_level" 
+        class="px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        onchange="this.form.submit()"
       >
-        Search
-      </button>
-      {% if query %}
-        <a href="{% url 'lessonplans:lesson_plan_list' %}" class="ml-2 px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 transition">
+        <option value="">All Grades</option>
+        {% for grade_level in grade_levels %}
+          <option value="{{ grade_level }}" {% if grade_level|stringformat:"s" == request.GET.grade_level %}selected{% endif %}>{{ grade_level }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Term Filter -->
+      <select 
+          name="term" 
+          class="px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          onchange="this.form.submit()"
+      >
+          <option value="">All Terms</option>
+          {% for term in terms %}
+            <option value="{{ term }}" {% if term|stringformat:"s" == request.GET.term %}selected{% endif %}>
+              {{ term }}
+            </option>
+          {% endfor %}
+      </select>
+
+      <!-- Week Filter -->
+      <select 
+          name="week" 
+          class="px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          onchange="this.form.submit()"
+      >
+          <option value="">All Weeks</option>
+          {% for week in weeks %}
+              <option value="{{ week }}" {% if week|stringformat:"s" == request.GET.week %}selected{% endif %}>
+                  Week {{ week }}
+              </option>
+          {% endfor %}
+      </select>
+
+      <!-- Status Filter -->
+      <select 
+        name="status" 
+        class="px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        onchange="this.form.submit()"
+      >
+        <option value="">All Statuses</option>
+        {% for status in status_choices %}
+          <option value="{{ status }}" {% if status == request.GET.status %}selected{% endif %}>{{ status | title }}</option>
+        {% endfor %}
+      </select>
+
+      {% if query or request.GET.subject or request.GET.grade_level or request.GET.status or request.GET.term or request.GET.week %}
+        <a href="{% if query %}{{ request.path }}?q=&{% else %}{{ request.path }}{% endif %}" class="ml-2 px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 transition">
           Clear
         </a>
       {% endif %}
     </form>
+
 
   {% if page_obj %}
     <div class="overflow-x-auto">
       <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
         <thead class="bg-blue-50">
           <tr class="text-left text-sm font-semibold text-gray-700">
+            <th class="py-2 px-4">Term</th>
+            <th class="py-2 px-4">Week</th>
             <th class="py-2 px-4">Date</th>
+            <th class="py-2 px-4">Teacher</th>
             <th class="py-2 px-4">Subject</th>
             <th class="py-2 px-4">Grade</th>
             <th class="py-2 px-4">Lesson Title</th>
@@ -53,7 +129,10 @@
         <tbody>
           {% for plan in page_obj %}
             <tr class="border-t hover:bg-gray-50 text-sm">
+              <td class="py-2 px-4">{{ plan.term }}</td>
+              <td class="py-2 px-4">{{ plan.week }}</td>
               <td class="py-2 px-4">{{ plan.lesson_date|date:"M d, Y" }}</td>
+              <td class="py-2 px-4">{{ plan.teacher.get_full_name }}</td>
               <td class="py-2 px-4">{{ plan.subject }}</td>
               <td class="py-2 px-4">{{ plan.grade_level }}</td>
               <td class="py-2 px-4">{{ plan.lesson_title }}</td>

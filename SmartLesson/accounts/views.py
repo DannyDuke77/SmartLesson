@@ -187,7 +187,7 @@ def logout_view(request):
 
 @role_required('teacher', 'admin', 'ict_officer')
 def notifications(request):
-    notifications = request.user.notifications.all()
+    notifications = request.user.notifications.all().order_by('created_at')
 
     return render(request, 'accounts/notifications.html', {'notifications': notifications})
 
@@ -203,7 +203,7 @@ def mark_notification_read(request, pk):
 @role_required('teacher', 'admin', 'ict_officer')
 def fetch_notifications(request):
     """Return unread notifications as JSON."""
-    unread = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')[:5]
+    unread = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')
     data = [
         {
             "id": n.id,

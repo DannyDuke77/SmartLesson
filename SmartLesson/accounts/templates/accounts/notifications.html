@@ -4,7 +4,7 @@
 {% block content %}
 <div class="max-w-5xl mx-auto mt-10 space-x-4">
   <h1 class="text-2xl font-semibold text-gray-800 mb-6">Notifications</h1>
-  <p class="text-red-500 mb-6 italic">Mark notifications as read first to view feedback.</p>
+  <p class="text-red-500 mb-6 italic">Mark notifications as read first to view feedback or review.</p>
 
     {% if notifications %}
         <div class="bg-white shadow rounded-xl divide-y">
@@ -24,7 +24,13 @@
                         {% else %}
                             <div class="flex items-center">
                                 <p class="text-sm text-gray-500">Marked as read</p>
-                                <a href="{% url 'lessonplans:lesson_plan_detail' n.lesson_plan.slug %}#admin-feedback" class="ml-4 text-blue-600 text-sm hover:underline">View Feedback</a>
+                                {% if user.profile.user_role == 'teacher' %}
+                                    <a href="{% url 'lessonplans:lesson_plan_detail' n.lesson_plan.slug %}#admin-feedback" class="ml-4 text-blue-600 text-sm hover:underline">View Feedback</a>
+                                {% else %}
+                                    {% if n.lesson_plan %}
+                                        <a href="{% url 'lessonplans:lesson_plan_detail' n.lesson_plan.slug %}#review" class="ml-4 text-blue-600 text-sm hover:underline">Review</a>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>

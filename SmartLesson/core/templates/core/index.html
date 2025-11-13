@@ -59,7 +59,7 @@
         Enables teachers to create, edit, and store CBC-aligned lesson plans digitally, share them with colleagues, and receive feedback from supervisors.
       </p>
       {% if user.profile.user_role == 'teacher' %}
-        <a href="{% url 'lessonplans:lesson_plan_list' %}" class="block text-center text-blue-600 hover:underline font-medium">Explore →</a>
+        <a href="{% url 'lessonplans:my_lesson_plans' %}" class="block text-center text-blue-600 hover:underline font-medium">Explore →</a>
       {% endif %}
     </div>
 

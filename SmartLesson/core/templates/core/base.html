@@ -15,6 +15,45 @@
     html{
       scroll-behavior: smooth;
     }
+    
+    /* Sidebar transition */
+    .sidebar {
+      transition: transform 0.3s ease;
+    }
+    
+    /* Mobile sidebar overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 40;
+    }
+    
+    /* Active sidebar link */
+    .sidebar-link.active {
+      background-color: #eff6ff;
+      border-right: 3px solid #3b82f6;
+      color: #1e40af;
+    }
+    
+    /* Main content transition */
+    .main-content {
+      transition: margin-left 0.3s ease;
+    }
+    
+    /* Hide scrollbar for cleaner look */
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 4px;
+    }
   </style>
 </head>
 
@@ -65,99 +104,29 @@
   </script>
 {% endif %}
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
 
-  <!-- Navigation -->
-  <nav class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-    <div class="max-w-8xl mx-auto px-6 py-4 flex justify-between items-center">
-      <a href="/" class="text-2xl font-bold text-blue-600">SmartLesson Planner</a>
+  {% if not request.user.is_authenticated %}
+    <!-- Logged Out Navigation -->
+    <nav class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+      <div class="max-w-8xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold text-blue-600">SmartLesson Planner</a>
 
-      <div class="flex items-center space-x-4">
-        {% if request.user.is_authenticated %}
-          <a href="{% url 'accounts:notifications' %}" class="relative lg:hidden hover:text-blue-600 flex items-center gap-1">
-            <div id="notif-bell" class="relative cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+        <div class="flex items-center space-x-4">
+          <!-- Hamburger Button (Mobile) -->
+          <button id="menu-btn" class="lg:hidden focus:outline-none">
+            <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-              <span id="notif-count-mobile"
-                    class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 rounded-full hidden">
-              </span>
-            </div>
+          </button>
+        </div>
 
-            <!-- Floating pop-up -->
-            <div id="notif-popup-mobile" class="hidden fixed top-20 right-6 w-72 bg-white shadow-lg rounded-xl border p-4 z-50"></div>
-          </a>
-        {% endif %}
-
-        <!-- Hamburger Button (Mobile) -->
-        <button id="menu-btn" class="lg:hidden focus:outline-none">
-          <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Desktop Menu -->
-      <ul class="hidden lg:flex space-x-6 font-medium">
-        <li><a href="/" class="hover:text-blue-600">Home</a></li>
-        <li><a href="{% url 'core:dashboard' %}" class="hover:text-blue-600">Dashboard</a></li>
-        <li><a href="{% url 'accounts:profile' %}" class="hover:text-blue-600">Profile</a></li>
-
-        <!-- Teacher Dropdown -->
-        <li class="relative group">
-          <button class="hover:text-blue-600 flex items-center gap-1">Teacher ▾</button>
-          <ul
-            class="absolute left-0 pt-2 w-48 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
-            <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block px-4 py-2 hover:bg-blue-50">Create Lesson Plan</a></li>
-            <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block px-4 py-2 hover:bg-blue-50">My Lesson Plans</a></li>
-          </ul>
-        </li>
-
-        <!-- Admin Dropdown -->
-        <li class="relative group">
-          <button class="hover:text-blue-600 flex items-center gap-1">Admin ▾</button>
-          <ul
-            class="absolute left-0 pt-2 w-56 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
-            <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block px-4 py-2 hover:bg-blue-50">Review Lesson Plans</a></li>
-            <li><a href="{% url 'lessonplans:coverage_reports' %}" class="block px-4 py-2 hover:bg-blue-50">Coverage Reports</a></li>
-          </ul>
-        </li>
-
-        <!-- ICT Officer Dropdown -->
-        <li class="relative group">
-          <button class="hover:text-blue-600 flex items-center gap-1">ICT Officer ▾</button>
-          <ul
-            class="absolute left-0 pt-2 w-52 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
-            <li><a href="{% url 'accounts:manage_users' %}" class="block px-4 py-2 hover:bg-blue-50">User Management</a></li>
-          </ul>
-        </li>
-
-        
-          {% if request.user.is_authenticated %}
-            <li>
-              <a href="{% url 'accounts:notifications' %}" class="relative hover:text-blue-600 flex items-center gap-1">
-                <div id="notif-bell" class="relative cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                </svg>
-                  <span id="notif-count-desktop"
-                        class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 rounded-full hidden">
-                  </span>
-                </div>
-
-                <!-- Floating pop-up -->
-                <div id="notif-popup-desktop" class="hidden fixed top-20 right-6 w-72 bg-white shadow-lg rounded-xl border p-4 z-50"></div>
-              </a>
-            </li>
-          {% endif %}
-
-        <li><a href="{% url 'core:help_and_support' %}" class="hover:text-blue-600">Help</a></li>
-
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'accounts:logout' %}" class="hover:text-blue-600">Logout</a></li>
-        {% else %}
+        <!-- Desktop Menu -->
+        <ul class="hidden lg:flex space-x-6 font-medium">
+          <li><a href="/" class="hover:text-blue-600">Home</a></li>
+          <li><a href="{% url 'core:help_and_support' %}" class="hover:text-blue-600">Help</a></li>
           <li class="relative group">
             <button class="hover:text-blue-600 flex items-center gap-1">Login ▾</button>
             <ul class="absolute right-0 pt-2 w-48 bg-white shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 ease-in-out">
@@ -166,44 +135,14 @@
               <li><a href="{% url 'accounts:admin_login' %}" class="block px-4 py-2 hover:bg-blue-50">Administrator Login</a></li>
             </ul>
           </li>
-        {% endif %}
-      </ul>
-    </div>
-
-    <!-- Mobile Dropdown Menu -->
-    <div id="mobile-menu"
-         class="hidden lg:hidden bg-white shadow-md border-t flex flex-col space-y-2 py-3 px-6 font-medium">
-      <a href="/" class="hover:text-blue-600">Home</a>
-      <a href="{% url 'core:dashboard' %}" class="hover:text-blue-600">Dashboard</a>
-      <a href="{% url 'accounts:profile' %}" class="hover:text-blue-600">Profile</a>
-
-      <details class="group">
-        <summary class="cursor-pointer hover:text-blue-600">Teacher</summary>
-        <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="{% url 'lessonplans:create_lesson_plan' %}" class="block py-1 hover:text-blue-600 ">Create Lesson Plan</a></li>
-          <li><a href="{% url 'lessonplans:lesson_plan_list' %}" class="block py-1 hover:text-blue-600">My Lesson Plans</a></li>
         </ul>
-      </details>
+      </div>
 
-      <details class="group">
-        <summary class="cursor-pointer hover:text-blue-600">Admin</summary>
-        <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="{% url 'lessonplans:lesson_plan_list' %}?from_admin=true" class="block py-1 hover:text-blue-600">Review Lesson Plans</a></li>
-          <li><a href="{% url 'lessonplans:coverage_reports' %}" class="block py-1 hover:text-blue-600">Coverage Reports</a></li>
-        </ul>
-      </details>
-
-      <details class="group">
-        <summary class="cursor-pointer hover:text-blue-600">ICT Officer</summary>
-        <ul class="ml-4 mt-1 space-y-1">
-          <li><a href="{% url 'accounts:manage_users' %}" class="block py-1 hover:text-blue-600">User Management</a></li>
-        </ul>
-      </details>
-
-      <a href="{% url 'core:help_and_support' %}" class="hover:text-blue-600">Help</a>
-      {% if user.is_authenticated %}
-      <a href="{% url 'accounts:logout' %}" class="hover:text-blue-600">Logout</a>
-      {% else %}
+      <!-- Mobile Dropdown Menu -->
+      <div id="mobile-menu"
+           class="hidden lg:hidden bg-white shadow-md border-t flex flex-col space-y-2 py-3 px-6 font-medium">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <a href="{% url 'core:help_and_support' %}" class="hover:text-blue-600">Help</a>
         <details class="group">
           <summary class="cursor-pointer hover:text-blue-600">Login</summary>
           <ul class="ml-4 mt-1 space-y-1">
@@ -212,66 +151,247 @@
             <li><a href="{% url 'accounts:admin_login' %}" class="block py-1 hover:text-blue-600">Administrator Login</a></li>
           </ul>
         </details>
-      {% endif %}
+      </div>
+    </nav>
+  {% else %}
+    <!-- Logged In Sidebar Layout -->
+    <div class="flex flex-1">
+      <!-- Sidebar -->
+      <div id="sidebar" class="sidebar pt-4 fixed top-0 left-0 h-full w-64 bg-white shadow-md z-50 overflow-y-auto lg:translate-x-0 transform -translate-x-full">
+        <div class="p-4 border-b">
+          <a href="/" class="text-xl font-bold text-blue-600">SmartLesson Planner</a>
+          <button id="close-sidebar" class="lg:hidden absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="p-4 border-b flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
+            {{ request.user.first_name|first }}{{ request.user.last_name|first }}
+          </div>
+          <div>
+            <p class="font-medium">{{ request.user.get_full_name }}</p>
+            <p class="text-xs text-gray-500">{{ request.user.email }}</p>
+          </div>
+        </div>
+        
+        <nav class="p-4 space-y-2">
+          <a href="{% url 'core:dashboard' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            Dashboard
+          </a>
+          <a href="{% url 'accounts:profile' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+            Profile
+          </a>
+          
+          <!-- Teacher Section -->
+          <div class="pt-2">
+            <p class="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Teacher</p>
+            <a href="{% url 'lessonplans:create_lesson_plan' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'create_lesson_plan' %}active{% endif %}">
+              Create Lesson Plan
+            </a>
+            <a href="{% url 'lessonplans:my_lesson_plans' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'my_lesson_plans' %}active{% endif %}">
+              My Lesson Plans
+            </a>
+          </div>
+          
+          <!-- Admin Section -->
+          <div class="pt-2">
+            <p class="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Admin</p>
+            <a href="{% url 'lessonplans:review_lesson_plans' %}?from_admin=true" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'review_lesson_plans' %}active{% endif %}">
+              Review Lesson Plans
+            </a>
+            <a href="{% url 'lessonplans:coverage_reports' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'coverage_reports' %}active{% endif %}">
+              Coverage Reports
+            </a>
+          </div>
+          
+          <!-- ICT Officer Section -->
+          <div class="pt-2">
+            <p class="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">ICT Officer</p>
+            <a href="{% url 'accounts:manage_users' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">
+              User Management
+            </a>
+          </div>
+          
+          <!-- Notifications -->
+          <a href="{% url 'accounts:notifications' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+            <div class="flex justify-between items-center">
+              <span>Notifications</span>
+              <span id="notif-count-sidebar" class="bg-red-600 text-white text-xs font-bold px-1.5 rounded-full hidden"></span>
+            </div>
+          </a>
+          
+          <!-- Help -->
+          <a href="{% url 'core:help_and_support' %}" class="sidebar-link block px-4 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if request.resolver_match.url_name == 'help_and_support' %}active{% endif %}">
+            Help & Support
+          </a>
+        </nav>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
+          <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 rounded-md hover:bg-red-50 hover:text-red-600 transition-colors text-center">
+            Logout
+          </a>
+        </div>
+      </div>
+      
+      <!-- Sidebar overlay for mobile -->
+      <div id="sidebar-overlay" class="sidebar-overlay"></div>
+      
+      <!-- Top Bar for Mobile -->
+      <div class="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-30 p-4 flex justify-between items-center">
+        <button id="open-sidebar" class="text-gray-700">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <a href="/" class="text-lg font-bold text-blue-600">SmartLesson Planner</a>
+        <a href="{% url 'accounts:notifications' %}" class="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          <span id="notif-count-mobile" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-1.5 rounded-full hidden"></span>
+        </a>
+      </div>
     </div>
-  </nav>
+  {% endif %}
 
   <!-- Main Content -->
-  <main class="pt-24 px-6 min-h-screen">
-  <!-- Messages -->
-    {% if messages %}
-      <div class="mx-auto space-y-2 mb-6">
-        {% for message in messages %}
-          <div
-            class="p-2 text-sm font-semibold rounded
-                {% if message.tags == 'error' %}bg-red-200 text-red-800
-                {% elif message.tags == 'success' %}bg-green-200 text-green-900
-                {% elif message.tags == 'info' %}bg-blue-200 text-blue-900
-                {% elif message.tags == 'warning' %}bg-yellow-200 text-yellow-900
-                {% else %}bg-gray-200 text-gray-800{% endif %}">
-            {{ message }}
-            <span class="float-right cursor-pointer hover:scale-125 ease-in transition" onclick="this.parentElement.remove();">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-              </svg>
-            </span>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  <main class="main-content flex-1 {% if request.user.is_authenticated %}lg:ml-64 pt-16 lg:pt-0{% else %}pt-24{% endif %}">
+    <div class="p-6">
+      <!-- Messages -->
+      {% if messages %}
+        <div class="mx-auto space-y-2 mb-6 max-w-full">
+          {% for message in messages %}
+            <div
+              class="p-2 text-sm font-semibold rounded
+                  {% if message.tags == 'error' %}bg-red-200 text-red-800
+                  {% elif message.tags == 'success' %}bg-green-200 text-green-900
+                  {% elif message.tags == 'info' %}bg-blue-200 text-blue-900
+                  {% elif message.tags == 'warning' %}bg-yellow-200 text-yellow-900
+                  {% else %}bg-gray-200 text-gray-800{% endif %}">
+              {{ message }}
+              <span class="float-right cursor-pointer hover:scale-125 ease-in transition" onclick="this.parentElement.remove();">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
 
-    {% block content %}
-    {% endblock %}
+      {% block content %}
+      {% endblock %}
+    </div>
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t mt-8 py-4 text-center text-sm text-gray-500">
+  <footer class="bg-white border-t py-4 text-center text-sm text-gray-500 {% if request.user.is_authenticated %}lg:ml-64{% endif %}">
     &copy; {{ now|date:"Y" }} SmartLesson Planner. All rights reserved.
   </footer>
 
-  <!-- Dropdown hover delay fix + Mobile toggle -->
+  <!-- JavaScript -->
   <script>
-    // Fix dropdown flicker on hover
-    document.querySelectorAll('.group').forEach(group => {
-      let timeout;
-      group.addEventListener('mouseenter', () => {
-        clearTimeout(timeout);
-        group.querySelector('ul')?.classList.add('opacity-100', 'visible');
-      });
-      group.addEventListener('mouseleave', () => {
-        timeout = setTimeout(() => {
-          group.querySelector('ul')?.classList.remove('opacity-100', 'visible');
-        }, 150);
-      });
-    });
-
-    // Mobile menu toggle
-    const menuBtn = document.getElementById('menu-btn');
+  // -------------------------------
+  // Mobile menu toggle (logged-out users)
+  // -------------------------------
+  const menuBtn = document.getElementById('menu-btn');
+  if (menuBtn) {
     const mobileMenu = document.getElementById('mobile-menu');
     menuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
     });
-  </script>
+  }
+
+  // -------------------------------
+  // Sidebar toggle (logged-in users)
+  // -------------------------------
+  {% if request.user.is_authenticated %}
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const openSidebarBtn = document.getElementById('open-sidebar');
+    const closeSidebarBtn = document.getElementById('close-sidebar');
+
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      sidebarOverlay.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      sidebarOverlay.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // -------------------------------
+    // Notifications (desktop, mobile, sidebar)
+    // -------------------------------
+    async function fetchNotifications() {
+      try {
+        const res = await fetch("{% url 'accounts:fetch_notifications' %}");
+        const data = await res.json();
+
+        const countDesktop = document.getElementById('notif-count-desktop');
+        const countMobile = document.getElementById('notif-count-mobile');
+        const countSidebar = document.getElementById('notif-count-sidebar');
+
+        const popupDesktop = document.getElementById('notif-popup-desktop');
+        const popupMobile = document.getElementById('notif-popup-mobile');
+
+        const hasNotifications = data.notifications.length > 0;
+
+        // Update counters
+        [countDesktop, countMobile, countSidebar].forEach(el => {
+          if (el) {
+            if (hasNotifications) {
+              el.textContent = data.notifications.length;
+              el.classList.remove('hidden');
+            } else {
+              el.classList.add('hidden');
+            }
+          }
+        });
+
+        // Build notification HTML
+        const notificationsHTML = data.notifications.map(n => `
+          <div class="border-b last:border-none py-2">
+            <p class="text-gray-800 text-sm">${n.message}</p>
+            <p class="text-xs text-gray-500">${n.created_at}</p>
+          </div>
+        `).join('');
+
+        // Update popups
+        [popupDesktop, popupMobile].forEach(popup => {
+          if (popup) {
+            popup.innerHTML = notificationsHTML;
+            if (hasNotifications) {
+              popup.classList.remove('hidden');
+              setTimeout(() => popup.classList.add('hidden'), 5000);
+            } else {
+              popup.classList.add('hidden');
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    }
+
+    // Initial fetch and interval
+    fetchNotifications();
+    setInterval(fetchNotifications, 3000);
+  {% endif %}
+</script>
+
+
 
 </body>
 </html>
