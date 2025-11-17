@@ -42,7 +42,7 @@ def create_lesson_plan(request):
                 )
 
             messages.success(request, "Lesson plan created successfully.")
-            return redirect('lessonplans:lesson_plan_list')
+            return redirect('lessonplans:lesson_plan_detail', slug=lesson_plan.slug)
     else:
         form = LessonPlanForm()
     return render(request, 'lessonplans/lesson_plan_form.html', {'form': form})
