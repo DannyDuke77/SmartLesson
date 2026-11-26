@@ -1,55 +1,53 @@
 # SmartLesson
 
-SmartLesson is a Django-based lesson-plan management application for the Kenyan CBC curriculum. It supports teacher plan creation, administrator/ICT review, in-app notifications, coverage reporting, and PDF/Excel exports.
+SmartLesson is a Django-based lesson-plan management application for the Kenyan Competency-Based Curriculum (CBC). It provides a structured workflow for teachers to create and submit lesson plans, administrators to review submissions, and ICT officers to oversee reporting and user management.
 
 ## Overview
 
-SmartLesson provides separate workflows for three roles:
+SmartLesson supports three user roles:
 
-- **Teachers** create and edit lesson plans and view their submission history.
-- **Administrators** review submitted plans, return feedback, and approve or reject submissions.
-- **ICT officers** can review plans and reports and manage registered users.
+- **Teachers** create and edit lesson plans, submit them for review, and track their submission history.
+- **Administrators** review submitted plans, provide feedback, and approve or reject submissions.
+- **ICT Officers** review lesson plans and reports and manage registered users.
 
-Plans include subject, grade level, term, week, strand, learning objectives, resources, lesson activities, assessment, reflection, and CBC-specific fields.
+Lesson plans capture subject, grade level, term, week, strand, learning objectives, resources, lesson activities, assessment, reflection, and other CBC-related details.
 
-## Key features
+## Key Features
 
 - Role-based teacher, administrator, and ICT officer accounts.
-- CBC lesson-plan creation for PP1 through JSS Grade 9.
-- Teacher lesson lists with search and filters.
-- Submitted, approved, and rejected review statuses.
-- Administrative feedback and review tracking.
-- In-app notifications for submission, resubmission, approval, and rejection.
-- Coverage statistics and paginated reporting.
+- CBC lesson-plan creation from PP1 through JSS Grade 9.
+- Lesson-plan search and filtering.
+- Submission and review tracking with submitted, approved, and rejected statuses.
+- Administrative feedback and review history.
+- In-app notifications for submissions, resubmissions, approvals, and rejections.
+- Coverage statistics and paginated reports.
 - PDF exports for individual lesson plans and coverage reports.
 - Excel exports for coverage reports.
-- Password changes and user profile management.
-- ICT-officer user search and account management.
-- Django administration for registered application models.
+- User profile and password management.
+- ICT officer user search and account management.
+- Django administration for application models.
 
-## User roles
+## User Roles
 
-- **Teacher:** Creates, edits, and submits lesson plans.
-- **Administrator:** Reviews all lesson plans, provides feedback, and updates approval status.
-- **ICT Officer:** Reviews lesson plans and coverage reports and manages registered users.
+| Role | Responsibilities |
+|---|---|
+| Teacher | Creates, edits, and submits lesson plans. Tracks submission status and receives review feedback. |
+| Administrator | Reviews lesson plans, provides feedback, and updates approval status. |
+| ICT Officer | Reviews lesson plans and coverage reports and manages registered users. |
 
-Role checks are implemented with a custom `role_required` decorator and direct profile-role checks.
+## Technology Stack
 
-## Technology stack
+- **Backend:** Python, Django 5.2.7
+- **Database:** SQLite
+- **Frontend:** Django Template Language, Tailwind CSS, Alpine.js
+- **Utilities:** django-widget-tweaks
+- **Document generation:** ReportLab, OpenPyXL
+- **Image processing:** Pillow
+- **Authentication:** Django built-in authentication
 
-- Python
-- Django 5.2.7
-- SQLite
-- Django Template Language
-- `django-widget-tweaks`
-- ReportLab
-- OpenPyXL
-- Pillow
-- Tailwind CSS loaded from a CDN
-- Alpine.js loaded from a CDN
-- Django built-in authentication
+Tailwind CSS and Alpine.js are loaded through their respective CDNs.
 
-## Project structure
+## Project Structure
 
 ```text
 SmartLesson/
@@ -58,17 +56,17 @@ SmartLesson/
 └── SmartLesson/
     ├── manage.py
     ├── SmartLesson/          # Project settings and root URLs
-    ├── core/                # Home page, dashboard, and support
-    ├── accounts/            # Profiles, roles, authentication, users, notifications
-    └── lessonplans/         # Lesson plans, review, reports, and exports
+    ├── core/                 # Home page, dashboard, and support
+    ├── accounts/             # Profiles, roles, authentication, users, notifications
+    └── lessonplans/          # Lesson plans, review, reports, and exports
 ```
 
-## Installation and setup
+## Installation and Setup
 
 ### Prerequisites
 
 - Python 3
-- `pip`
+- pip
 
 ### 1. Clone the repository
 
@@ -77,23 +75,23 @@ git clone https://github.com/DannyDuke77/SmartLesson.git
 cd SmartLesson
 ```
 
-### 2. Create a virtual environment
+### 2. Create and activate a virtual environment
 
-Linux/macOS:
+**Linux/macOS**
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Windows Command Prompt:
+**Windows Command Prompt**
 
 ```bat
 python -m venv .venv
 .venv\Scripts\activate.bat
 ```
 
-Windows PowerShell:
+**Windows PowerShell**
 
 ```powershell
 python -m venv .venv
@@ -106,20 +104,18 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-### 4. Run migrations
+### 4. Apply database migrations
 
 ```bash
 cd SmartLesson
 python manage.py migrate
 ```
 
-### 5. Create a superuser
+### 5. Create an administrator account
 
 ```bash
 python manage.py createsuperuser
 ```
-
-The Django admin interface is available at `/admin/` after starting the server.
 
 ### 6. Start the development server
 
@@ -127,38 +123,36 @@ The Django admin interface is available at `/admin/` after starting the server.
 python manage.py runserver
 ```
 
-Open `http://127.0.0.1:8000/`.
+Open `http://127.0.0.1:8000/` in your browser.
 
-## Environment configuration
+The Django administration interface is available at `http://127.0.0.1:8000/admin/`.
 
-The project does not read environment variables. Settings are written directly in `SmartLesson/SmartLesson/settings.py`:
+## Configuration
 
-- Database: SQLite at `BASE_DIR / 'db.sqlite3'`
-- Time zone: `Africa/Nairobi`
-- Language: `en-us`
-- Debug mode: enabled
-- `ALLOWED_HOSTS`: empty
+The application uses the following default configuration:
 
-A Django development secret key is stored in the source. Replace it and keep it private outside local development.
+- **Database:** SQLite
+- **Time zone:** Africa/Nairobi
+- **Language:** en-us
+- **Debug mode:** Enabled
 
-No external API keys or required environment variables are referenced by the code.
+Project settings are maintained in `SmartLesson/SmartLesson/settings.py`.
+
+For deployment, configure a secure secret key, appropriate allowed hosts, and production-ready settings.
 
 ## Usage
 
-- Teachers register or log in, create lesson plans, and track their status.
-- Administrators and ICT officers review, approve, or reject plans and provide feedback.
-- Teachers receive notifications after review or when plans require revision.
-- Administrators and ICT officers can filter coverage reports and export them as PDF or Excel.
-- Individual lesson plans can be downloaded as PDF documents.
+1. Teachers register or log in and create lesson plans.
+2. Submitted plans become available for administrative review.
+3. Administrators and ICT officers review plans and provide feedback.
+4. Teachers receive notifications when plans are approved, rejected, or require revision.
+5. Administrators and ICT officers can view coverage reports and export them as PDF or Excel documents.
+6. Individual lesson plans can be downloaded as PDF documents.
 
-## Known limitations
+## Development Notes
 
-- The project uses development settings and a checked-in development secret key.
-- SQLite is used directly and no production database configuration is provided.
-- Test modules contain no substantive test cases.
-- Tailwind CSS and Alpine.js are loaded through CDNs.
-- Some authorization logic should be reviewed before deployment.
+SmartLesson is configured for local development using SQLite and Django's development settings. A production deployment would require environment-based configuration and an appropriate production database.
 
 ## License
 
-No licence file or licence metadata is present in the repository, so no licence is asserted.
+No licence file or licence metadata is currently included in the repository.
